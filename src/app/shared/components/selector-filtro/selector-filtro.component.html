@@ -1,0 +1,10 @@
+<p-dropdown
+    [(ngModel)]="seleccionado"
+    [options]="valores"
+    optionLabel="nombre"
+    [showClear]="true"
+    placeholder="Seleccione una Opción"
+    (onChange)="onChange($event)"
+    appendTo="body"
+>
+</p-dropdown>

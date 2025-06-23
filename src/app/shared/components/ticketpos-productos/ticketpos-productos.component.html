@@ -1,0 +1,31 @@
+
+<button pButton icon="pi pi-print" styleClass="p-button-rounded p-button-primary" (click)="printTicket()">
+     Imprimir Inventario</button>
+<div style="display: none;" >
+<div id="ticket-pos" class="ticket" >
+    <p>***************************************************</p>
+    <h1>{{ tienda }}</h1>
+    <p>{{ direccion }}</p>
+    <p>Tel: {{ telefono }}</p>
+    <p>***************************************************</p>
+    <div>
+        <p style="font-size: 1.4em"><b>PRODUCTOS INVENTARIO</b></p>
+    </div>
+    <p>***************************************************</p>
+    <div class="items">
+      <table>
+        <tr>
+          <th>Producto</th>
+          <th style="text-align: right;">Stock Actual</th>
+        </tr>
+        <tr *ngFor="let item of data">
+          <td>{{ item.nombre }}</td>
+          <td style="text-align: right;">{{ item.stock_actual }}</td>
+        </tr>
+      </table>
+    </div>
+    <p>***************************************************</p>
+    <p>¡Gracias por su visitarnos!</p>
+  </div>
+</div>
+

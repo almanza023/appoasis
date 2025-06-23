@@ -1,0 +1,280 @@
+<p-toast></p-toast>
+<app-loading *ngIf="loading"></app-loading>
+<div class="grid">
+    <div class="col-12">
+        <div class="card p-fluid">
+            <div class="grid">
+                <div class="col-12 md:col-6 lg:col-6">
+                    <h3>{{ nombreModulo }}</h3>
+                </div>
+            </div>
+            <div class="grid" >
+                <div *ngIf="rol=='1'" class="col-12 md:col-3">
+                    <div class="field">
+                        <label>Cliente</label>
+                        <app-selector-cliente (itemSeleccionado)="filtroCliente = $event.id"></app-selector-cliente>
+                    </div>
+                </div>
+
+                <div class="col-12 md:col-3">
+                    <div class="field">
+                        <label>Fecha Inicial</label>
+                        <p-calendar [(ngModel)]="fechaInicial" [showIcon]="true" dateFormat="yy-mm-dd"></p-calendar>
+                    </div>
+                </div>
+                <div class="col-12 md:col-3">
+                    <div class="field">
+                        <label>Fecha Final</label>
+                        <p-calendar [(ngModel)]="fechaFinal" [showIcon]="true" dateFormat="yy-mm-dd"></p-calendar>
+                    </div>
+                </div>
+                <div class="col-12 md:col-3">
+                    <div class="field">
+                        <label>Estado</label>
+                        <p-dropdown [options]="estados" [(ngModel)]="filtroEstado" placeholder="Seleccione Estado" optionLabel="nombre" optionValue="id"></p-dropdown>
+                    </div>
+                </div>
+
+
+            </div>
+            <div class="grid mt-2">
+                <div class="col-12 md:col-2">
+                    <p-button label="Buscar" icon="pi pi-filter" (click)="buscar()"></p-button>
+                </div>
+                <div class="col-12 md:col-2">
+                    <p-button label="Crear" styleClass="p-button-success" icon="pi pi-plus" (click)="openNew(0)"></p-button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="grid">
+    <div class="col-12">
+        <div class="card px-6 py-6">
+            <p-table
+                #dt
+                [value]="data"
+                [columns]="cols"
+                [rows]="10"
+                [globalFilterFields]="['nombre', 'posicion', 'numero', 'estado']"
+                [paginator]="true"
+                [rowsPerPageOptions]="[10, 20, 30]"
+                [showCurrentPageReport]="true"
+                [rowHover]="true"
+                responsiveLayout="scroll"
+                currentPageReportTemplate="Mostrando {first} to {last} de {totalRecords} registros"
+                dataKey="id"
+            >
+                <ng-template pTemplate="caption">
+                    <div
+                        class="flex flex-column md:flex-row md:justify-content-between md:align-items-center"
+                    >
+                        <h5 class="m-0">Información General</h5>
+                        <span class="block mt-2 md:mt-0 p-input-icon-left">
+                            <i class="pi pi-search"></i>
+                            <input
+                                (input)="onGlobalFilter(dt, $event)"
+                                pInputText
+                                type="text"
+                                placeholder="Buscar..."
+                                class="w-full sm:w-auto"
+                            />
+                        </span>
+                    </div>
+                </ng-template>
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th pSortableColumn="id">
+                            Código
+                            <p-sortIcon field="id"></p-sortIcon>
+                        </th>
+                        <th pSortableColumn="fecha">
+                            Fecha
+                            <p-sortIcon field="fecha"></p-sortIcon>
+                        </th>
+                        <th pSortableColumn="cliente.nombre">
+                            Cliente
+                            <p-sortIcon field="cliente.nombre"></p-sortIcon>
+                        </th>
+                        <th pSortableColumn="forma_venta">
+                            Forma de Venta
+                            <p-sortIcon field="forma_venta"></p-sortIcon>
+                        </th>
+                        <th pSortableColumn="especial">
+                            Factura Especial
+                            <p-sortIcon field="especial"></p-sortIcon>
+                        </th>
+                        <th pSortableColumn="total">
+                            Total
+                            <p-sortIcon field="total"></p-sortIcon>
+                        </th>
+                        <th pSortableColumn="estado">
+                            Estado
+                            <p-sortIcon field="estado"></p-sortIcon>
+                        </th>
+                        <th></th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-item>
+                    <tr >
+                        <td style="width: 10%; min-width: 10rem">
+                            <span class="p-column-title">Código</span>
+                            {{ item.id }}
+                        </td>
+                        <td style="width: 32%; min-width: 10rem">
+                            <span class="p-column-title">Fecha</span>
+                            {{ item.fecha }}
+                        </td>
+                        <td style="width: 32%; min-width: 10rem">
+                            <span class="p-column-title">Cliente</span>
+                            {{ item.cliente?.nombre || 'Sin Cliente' }}
+                        </td>
+                        <td style="width: 32%; min-width: 10rem">
+                            <span class="p-column-title">Forma de Venta</span>
+                            {{
+                                item.forma_venta == 1 ? 'Contado' :
+                                item.forma_venta == 2 ? 'Crédito' :
+                                'Sin Forma de Venta'
+                            }}
+                        </td>
+                        <td style="width: 32%; min-width: 10rem">
+                            <span class="p-column-title">Factura Especial</span>
+                            {{ item.especial == 1 ? 'Si' : 'No' }}
+                        </td>
+
+                        <td style="width: 32%; min-width: 10rem">
+                            <span class="p-column-title">Total</span>
+                            {{ item.total | currency }}
+                        </td>
+
+                        <td style="width: 26%; min-width: 10rem">
+                            <span class="p-column-title">Estado</span>
+                            {{
+                                item.estado == 0 ? 'PENDIENTE' :
+                                item.estado == 1 ? 'FACTURADA' :
+                                item.estado == 2 ? 'ANULADA' :
+                                ''
+                            }}
+                        </td>
+                        <td>
+                            <div class="flex">
+                                <button
+                                    (click)="getVenta(item.id, item.observaciones)"
+                                    pButton
+                                    pRipple
+                                    icon="pi pi-eye"
+                                    class="p-button-rounded p-button-success mr-2"
+                                    tooltip="Ver Historial"
+                                ></button>
+                                <p-button *ngIf="item.estado !=2"
+                                    (click)="openNew(item.id)"
+                                    icon="pi pi-check"
+                                    styleClass="p-button-rounded p-button-info"
+                                ></p-button>
+                                <p-button *ngIf="item.estado == 1 || item.estado == 0 "
+                                (click)="anularVenta(item)"
+                                icon="pi pi-times"
+                                styleClass="p-button-rounded p-button-danger"
+                                tooltip="Anular Venta"
+                            ></p-button>
+                            </div>
+                        </td>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="footer">
+                    <tr>
+                        <td colspan="5"><strong>Totales</strong></td>
+                        <td><strong>{{ calcularTotalGeneral() | currency }}</strong></td>
+                        <td colspan="2"></td>
+                    </tr>
+                </ng-template>
+
+            </p-table>
+        </div>
+    </div>
+</div>
+
+<p-dialog
+    [(visible)]="clienteDialog"
+    [style]="{ width: '850px' }"
+    [modal]="true"
+    header
+    class="p-fluid"
+>
+    <div class="grid">
+        <div class="col-12">
+            <p-table [value]="detalles" [paginator]="true" [rows]="10" dataKey="id" responsiveLayout="scroll">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th>Producto</th>
+                        <th>Cantidad</th>
+                        <th>Precio</th>
+                        <th>Total</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-detalle>
+                    <tr>
+                        <td>{{ detalle.producto.nombre }}</td>
+                        <td>{{ detalle.total_cantidad }}</td>
+                        <td>{{ detalle.producto.precio | currency }}</td>
+                        <td>{{ detalle.total_subtotal | currency }}</td>
+                    </tr>
+                </ng-template>
+            </p-table>
+
+            <div class="field">
+                <h3>Total a Pagar: {{ calcularTotal() | currency }}</h3>
+                <h3>Cantidad Productos: {{ totalcantidad  }}</h3>
+            </div>
+
+            <div *ngIf="observaciones!=''" class="field mt-2">
+                <label for="observaciones"><b>Observaciones</b></label>
+                <p style="font-size: 1.2rem">{{observaciones}}</p>
+            </div>
+
+
+
+        </div>
+        </div>
+</p-dialog>
+
+<p-dialog
+    [(visible)]="deleteProductDialog"
+    [modal]="true"
+    [style]="{ width: '450px' }"
+    header="Confirmar"
+>
+    <div class="flex align-items-center justify-content-center">
+        <i
+            class="pi pi-exclamation-triangle mr-3"
+            style="font-size: 2rem"
+        ></i>
+        <span *ngIf="venta">
+            Esta seguro de Anular la Venta
+            <b>{{ venta.id }}</b>?
+        </span>
+    </div>
+    <div class="field">
+        <label for="motivo">Motivo:</label>
+        <textarea id="motivo" pInputTextarea [(ngModel)]="venta.observaciones" rows="3" class="w-full"></textarea>
+    </div>
+    <ng-template pTemplate="footer">
+        <button
+            (click)="confirmDelete()"
+            pButton
+            pRipple
+            icon="pi pi-check"
+            class="p-button-success"
+            label="Aceptar"
+        ></button>
+        <button
+            (click)="deleteProductDialog = false"
+            pButton
+            pRipple
+            icon="pi pi-times"
+            class="p-button-danger"
+            label="Cancelar"
+        ></button>
+    </ng-template>
+</p-dialog>

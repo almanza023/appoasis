@@ -1,0 +1,100 @@
+
+    <div class="grid">
+        <div class="col-12">
+            <p-toast></p-toast>
+            <div class="card p-fluid">
+                <div class="grid">
+                    <div class="col-12 md:col-6 lg:col-6">
+                        <h3>{{ nombreModulo }}</h3>
+                    </div>
+                </div>
+
+                <form
+                [formGroup]="form"
+                (ngSubmit)="onSubmit()"
+                class="p-grid p-fluid"
+            >
+            <div class="grid">
+                <!-- Columna 1 -->
+                <div class="col-12 md:col-12 lg:col-12">
+                    <label for="tipo" class="label-bold">Usuario</label>
+                   <h5><b>{{username}}</b></h5>
+
+                </div>
+                <!-- Columna 2 -->
+
+
+
+
+            </div>
+
+                <div class="grid">
+                    <!-- Columna 1 -->
+                    <div class="col-12 md:col-12 lg:col-12">
+                        <label for="tipo" class="label-bold">Contraseña Nueva</label>
+                        <input
+                        required
+                        type="password"
+                        id="nuevaclave"
+                        formControlName="nuevaclave"
+                        pInputText
+                    />
+                        <div
+                                    *ngIf="
+                                        form.get('nuevaclave').invalid &&
+                                        (form.get('nuevaclave').dirty ||
+                                            form.get('nuevaclave').touched)
+                                    "
+                                >
+                                    <small
+                                        class="text-danger"
+                                        *ngIf="form.get('nuevaclave').errors"
+                                        >La Nueva Clave es requerida</small
+                                    >
+                                </div>
+                    </div>
+                    <!-- Columna 2 -->
+
+
+
+
+                </div>
+
+                <div class="grid">
+                    <!-- Columna 1 -->
+                    <div class="col-12 md:col-12 lg:col-12">
+                        <label for="tipo" class="label-bold">Confirmar Contraseña</label>
+                        <input
+                        required
+                        type="password"
+                        id="confirmacion"
+                        formControlName="confirmacion"
+                        pInputText
+                    />
+                        <div
+                                    *ngIf="
+                                        form.get('confirmacion').invalid &&
+                                        (form.get('confirmacion').dirty ||
+                                            form.get('confirmacion').touched)
+                                    "
+                                >
+                                    <small
+                                        class="text-danger"
+                                        *ngIf="form.get('confirmacion').errors"
+                                        >Confirmar Clave es requerida</small
+                                    >
+                                </div>
+                    </div>
+                    <!-- Columna 2 -->
+                </div>
+                <!-- Botón de enviar -->
+                <div class="grid">
+                    <div class="col-12 md:col-3 lg:col-3">
+                        <button type="submit" icon="pi pi-check" class="p-button-success" pButton> Actualizar</button>
+                    </div>
+                </div>
+            </form>
+            </div>
+        </div>
+    </div>
+

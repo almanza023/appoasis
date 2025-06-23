@@ -1,0 +1,40 @@
+
+<button pButton icon="pi pi-print" styleClass="p-button-rounded p-button-primary" (click)="printTicket()"> Imprimir</button>
+<div style="display: none;" >
+<div id="ticket-pos" class="ticket" >
+    <p>***************************************************</p>
+    <h1>{{ tienda }}</h1>
+    <p>{{ nit }}</p>
+    <p>{{ direccion }}</p>
+    <p>Tel: {{ telefono }}</p>
+    <p>***************************************************</p>
+    <p>Fecha: {{ data.venta?.created_at | date:'dd/MM/yyyy HH:mm:ss' }}</p>
+    <p>***************************************************</p>
+    <div class="items">
+      <table>
+        <tr>
+          <th>Producto</th>
+          <th style="text-align: right;">Cant</th>
+          <th style="text-align: right;">Precio</th>
+          <th style="text-align: right;">Total</th>
+        </tr>
+        <tr *ngFor="let item of data.detalles">
+          <td>{{ item.producto?.nombre }}</td>
+          <td style="text-align: right;">{{ item.total_cantidad }}</td>
+          <td style="text-align: right;">{{ item.producto?.precio | currency:'COP':'symbol-narrow':'1.0-0' }}</td>
+          <td style="text-align: right;">{{ item.total_subtotal | currency:'COP':'symbol-narrow':'1.0-0' }}</td>
+        </tr>
+      </table>
+    </div>
+    <p>***************************************************</p>
+    <div class="total">
+        <p style="text-align: left; font-size: larger;"><strong>Cantidad Productos: {{ data?.detalles?.length}}</strong></p>
+        <p style="text-align: left; font-size: larger;"><strong>Total: {{ data.venta?.total | currency:'COP':'symbol-narrow':'1.0-0' }}</strong></p>
+      <p style="text-align: left; font-size: larger;"><strong>Dinero Recibido:  {{ data.venta?.dinero_recibido | currency:'COP':'symbol-narrow':'1.0-0' }}</strong></p>
+      <p style="text-align: left; font-size: larger;"><strong>Dinero Devuelto: {{ data.venta?.dinero_devuelto | currency:'COP':'symbol-narrow':'1.0-0' }}</strong></p>
+    </div>
+    <p>***************************************************</p>
+    <p>¡Gracias por su compra!</p>
+  </div>
+</div>
+

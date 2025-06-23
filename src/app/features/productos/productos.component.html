@@ -1,0 +1,512 @@
+<p-toast></p-toast>
+<app-loading *ngIf="loading"></app-loading>
+<div class="grid">
+    <div class="col-12">
+        <div class="card p-fluid">
+            <div class="grid">
+                <div class="col-12 md:col-6 lg:col-6">
+                    <h3>{{ nombreModulo }}</h3>
+                </div>
+            </div>
+            <div class="field grid justify-content-start">
+                <div class="col-12 md:col-2">
+                    <p-button
+                        label="Consultar"
+                        styleClass="p-button-info"
+                        icon="pi pi-search"
+                        (click)="getDataAll()"
+                    ></p-button>
+                </div>
+                <div class="col-12 md:col-2">
+                    <p-button *ngIf="rol=='1'"
+                        label="Crear"
+                        styleClass="p-button-success"
+                        icon="pi pi-plus"
+                        (click)="openNew()"
+                    ></p-button>
+                </div>
+<div class="col-12 md:col-2">
+    <p-button
+        label="Descargar Plantilla"
+        styleClass="p-button-primary"
+        icon="pi pi-download"
+        (click)="descargarPlantilla()"
+    ></p-button>
+</div>
+<div class="col-12 md:col-2">
+    <p-button
+        label="Importar Excel"
+        styleClass="p-button-warning"
+        icon="pi pi-upload"
+        (click)="importarExcel()"
+    ></p-button>
+</div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="grid">
+    <div class="col-12">
+        <div class="card px-6 py-6">
+            <div class="grid justify-content-end">
+                <p-button *ngIf="rol=='1'" label="Exportar" icon="pi pi-file" (click)="exportarPDF()" styleClass="p-button-success"></p-button>
+            </div>
+            <p-table
+                #dt
+                [value]="data"
+                [columns]="cols"
+                [rows]="10"
+                [globalFilterFields]="['nombre', 'codigo', 'descripcion', 'estado']"
+                [paginator]="true"
+                [rowsPerPageOptions]="[10, 20, 30]"
+                [showCurrentPageReport]="true"
+                [rowHover]="true"
+                responsiveLayout="scroll"
+                currentPageReportTemplate="Mostrando {first} to {last} de {totalRecords} registros"
+                dataKey="id"
+            >
+                <ng-template pTemplate="caption">
+                    <div
+                        class="flex flex-column md:flex-row md:justify-content-between md:align-items-center"
+                    >
+                        <h5 class="m-0">Información General</h5>
+                        <span class="block mt-2 md:mt-0 p-input-icon-left">
+                            <i class="pi pi-search"></i>
+                            <input
+                                (input)="onGlobalFilter(dt, $event)"
+                                pInputText
+                                type="text"
+                                placeholder="Buscar..."
+                                class="w-full sm:w-auto"
+                            />
+                        </span>
+                    </div>
+                </ng-template>
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th pSortableColumn="id">
+                        Código
+                        <p-sortIcon field="id"></p-sortIcon>
+                    </th>
+
+                        <th pSortableColumn="nombre">
+                            Nombre
+                            <p-sortIcon field="nombre"></p-sortIcon>
+                        </th>
+                        <th pSortableColumn="laboratorio">
+                            Laboratorio
+                            <p-sortIcon field="laboratorio"></p-sortIcon>
+                        </th>
+                        <th pSortableColumn="descripcion">
+                            Descripción
+                            <p-sortIcon field="descripcion"></p-sortIcon>
+                        </th>
+                        <th pSortableColumn="precio">
+                            Precio Venta
+                            <p-sortIcon field="precio"></p-sortIcon>
+                        </th>
+                        <th pSortableColumn="stock_actual" *ngIf="rol=='1'">
+                            Stock General
+                            <p-sortIcon field="stock_actual"></p-sortIcon>
+                        </th>
+                        <th pSortableColumn="fecha_vencimiento">
+                            Fecha Vencimiento
+                            <p-sortIcon field="fecha_vencimiento"></p-sortIcon>
+                        </th>
+                        <th pSortableColumn="estado">
+                            Estado
+                            <p-sortIcon field="estado"></p-sortIcon>
+                        </th>
+                        <th *ngIf="rol=='1'"></th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-item>
+                    <tr [ngStyle]="{'background-color': item.etiqueta_vencimiento === 'Verde' ? '#abebc6' : item.etiqueta_vencimiento === 'Rojo' ? '#ffccb3' : item.etiqueta_vencimiento === 'Amarillo' ? '#ffe0b2' : 'transparent'}">
+                        <td style="width: 32%; min-width: 10rem">
+                            <span class="p-column-title">Código</span>
+                            {{ item.id }}
+                        </td>
+                        <td style="width: 32%; min-width: 10rem">
+                            <span class="p-column-title">Nombre</span>
+                            {{ item.nombre }}
+                        </td>
+                        <td style="width: 32%; min-width: 10rem">
+                            <span class="p-column-title">Laboratorio</span>
+                            {{ item.laboratorio }}
+                        </td>
+                        <td style="width: 32%; min-width: 10rem">
+                            <span class="p-column-title">Descripción</span>
+                            {{ item.descripcion }}
+                        </td>
+                        <td style="width: 32%; min-width: 10rem">
+                            <span class="p-column-title">Precio Venta</span>
+                            {{ item.precio | currency }}
+                        </td>
+
+                        <td style="width: 32%; min-width: 10rem" *ngIf="rol=='1'">
+                            <span class="p-column-title">Stock Actual</span>
+                            {{ item.stock_actual }}
+                        </td>
+                        <!-- <td style="width: 32%; min-width: 10rem" *ngIf="rol=='1'">
+                            <span class="p-column-title">Precio Compra</span>
+                            {{ item.precio_compra  | currency }}
+                        </td>
+                        <td style="width: 32%; min-width: 10rem" *ngIf="rol=='1'">
+                            <span class="p-column-title">Ganancia</span>
+                            {{ item.ganancia  | currency }}
+                        </td> -->
+                        <td style="width: 32%; min-width: 10rem">
+                            <span class="p-column-title">Fecha Vencimiento</span>
+                            {{ item.fecha_vencimiento | date:'dd/MM/yyyy' }}
+                        </td>
+
+                        <td style="width: 26%; min-width: 10rem">
+                            <span class="p-column-title">Estado</span>
+                            {{ item.estado == "1" ? "ACTIVO" : "BLOQUEADO" }}
+                        </td>
+                        <td *ngIf="rol=='1'">
+                            <div class="flex">
+                                <div style="display: flex; flex-direction: column">
+                                    <button
+                                        (click)="editProduct(item)"
+                                        pButton
+                                        pRipple
+                                        icon="pi pi-pencil"
+                                        class="p-button-rounded p-button-success mb-2 p-button-sm"
+                                        label="Editar"
+                                    ></button>
+                                    <button
+                                        (click)="verHistorialMovimiento(item.id, item.nombre)"
+                                        pButton
+                                        pRipple
+                                        icon="pi pi-history"
+                                        class="p-button-rounded p-button-info mb-2 p-button-sm"
+                                        label="Historial"
+                                    ></button>
+                                    <!-- <button
+                                        (click)="openDialog(item.id, item.nombre, item.stock_actual, item.bodegas)"
+                                        pButton
+                                        pRipple
+                                        icon="pi pi-arrow-right"
+                                        class="p-button-rounded p-button-warning mb-2 p-button-sm"
+                                        label="Trasladar"
+                                    ></button> -->
+                                    <button
+                                        (click)="bloqueoCliente(item)"
+                                        pButton
+                                        pRipple
+                                        icon="pi pi-times"
+                                        class="p-button-rounded p-button-danger p-button-sm"
+                                        label="Bloquear"
+                                    ></button>
+
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </ng-template>
+<!-- <ng-template pTemplate="footer">
+    <tr>
+        <td  style="text-align: right; font-weight: bold;">
+            Total Utilidad:
+        </td>
+
+        <td *ngIf="rol=='1'" style="font-weight: bold;">
+            {{ getTotalGanancia() | currency }}
+        </td>
+        <td colspan="3">
+        </td>
+    </tr>
+</ng-template> -->
+            </p-table>
+        </div>
+    </div>
+</div>
+
+
+
+<p-dialog
+    [(visible)]="deleteProductDialog"
+    [modal]="true"
+    [style]="{ width: '450px' }"
+    header="Confirmar"
+>
+    <div class="flex align-items-center justify-content-center">
+        <i
+            class="pi pi-exclamation-triangle mr-3"
+            style="font-size: 2rem"
+        ></i>
+        <span *ngIf="producto">
+            Esta seguro de Cambiar el estado al Registro
+            <b>{{ producto.nombre }}</b>?
+        </span>
+    </div>
+    <ng-template pTemplate="footer">
+        <button
+            (click)="confirmDelete()"
+            pButton
+            pRipple
+            icon="pi pi-check"
+            class="p-button-success"
+            label="Aceptar"
+        ></button>
+        <button
+            (click)="deleteProductDialog = false"
+            pButton
+            pRipple
+            icon="pi pi-times"
+            class="p-button-danger"
+            label="Cancelar"
+        ></button>
+    </ng-template>
+</p-dialog>
+
+<p-dialog
+    [(visible)]="displayMovimientosDialog"
+    [modal]="true"
+    [style]="{ width: '80vw' }"
+    header="Historial de Movimientos"
+>
+    <label style="font-weight: bold;">{{ nombreProducto }}</label>
+    <p-table
+        [value]="movimientos"
+        [paginator]="true"
+        [rows]="10"
+        dataKey="id"
+        responsiveLayout="scroll"
+    >
+        <ng-template pTemplate="header">
+            <tr>
+                <th pSortableColumn="created_at">Fecha <p-sortIcon field="created_at"></p-sortIcon></th>
+                <th pSortableColumn="descripcion">Descripción <p-sortIcon field="descripcion"></p-sortIcon></th>
+                <th pSortableColumn="cantidad">Cantidad <p-sortIcon field="cantidad"></p-sortIcon></th>
+                <th pSortableColumn="saldo">Saldo <p-sortIcon field="saldo"></p-sortIcon></th>
+                <th pSortableColumn="precio_venta">Precio Venta <p-sortIcon field="precio_venta"></p-sortIcon></th>
+                <th pSortableColumn="precio_compra">Precio Compra <p-sortIcon field="precio_compra"></p-sortIcon></th>
+                <th pSortableColumn="utilidad">Porcentaje Utilidad <p-sortIcon field="utilidad"></p-sortIcon></th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-movimiento>
+            <tr>
+                <td>{{ movimiento.created_at | date: 'dd/MM/yyyy HH:mm:ss' }}</td>
+                <td>{{ movimiento.descripcion }}</td>
+                <td>{{ movimiento.cantidad }}</td>
+                <td>{{ movimiento.saldo }}</td>
+                <td>{{ movimiento.precio_venta | currency }}</td>
+                <td>{{ movimiento.precio_compra | currency }}</td>
+                <td *ngIf="movimiento.precio_compra > 0">{{ ((movimiento.precio_venta - movimiento.precio_compra) / movimiento.precio_compra * 100).toFixed(2) }}%</td>
+                <td *ngIf="movimiento.precio_compra <= 0">N/A</td>
+            </tr>
+        </ng-template>
+    </p-table>
+    <ng-template pTemplate="footer">
+        <button
+            (click)="displayMovimientosDialog = false"
+            pButton
+            pRipple
+            label="Cerrar"
+            icon="pi pi-times"
+            class="p-button-danger"
+        ></button>
+    </ng-template>
+</p-dialog>
+
+<p-dialog [(visible)]="trasladoDialog" [style]="{ width: '1100px' }" [modal]="true" header class="p-fluid">
+    <div class="card p-fluid">
+        <h3>Traslados de Productos</h3>
+        <form [formGroup]="trasladoForm" (ngSubmit)="saveProduct()">
+            <div class="grid">
+
+                <div class="col-12 md:col-4">
+                    <label htmlFor="nombre" class="font-bold mb-2">Nombre</label>
+                    <input type="text" pInputText formControlName="nombre" readonly>
+                </div>
+
+                <div class="col-12 md:col-4">
+                    <label htmlFor="nombre" class="font-bold mb-2">Stock General</label>
+                    <input type="text" pInputText formControlName="stock_general" readonly>
+                </div>
+
+            <div class="col-12">
+                <h4>Asignar a Bodegas</h4>
+                <p-table [value]="bodegas" [columns]="['nombre', 'cantidad']">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th>Nombre de Bodega</th>
+                            <th>Cantidad</th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-bodega let-i="rowIndex">
+                        <tr>
+                            <td>{{bodega.bodega?.nombre}}</td>
+                            <td>
+                                <div formArrayName="detalles">
+                                    <div *ngIf="detalle.controls.length > 0" [formGroupName]="i">
+                                        <input type="number" pInputText formControlName="cantidad" required (input)="agregarABodegaTraslado()" />
+                        <small *ngIf="detalle.at(i).get('cantidad').invalid && detalle.at(i).get('cantidad').touched" class="p-error">La cantidad es requerida</small>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </div>
+
+            </div>
+        </form>
+    </div>
+    <ng-template pTemplate="footer">
+        <button pButton pRipple label="Guardar" icon="pi pi-check" class="p-button-success mr-2" (click)="storeTraslado()"></button>
+        <button pButton pRipple label="Cancelar" icon="pi pi-times" class="p-button-danger" (click)="trasladoDialog = false"></button>
+    </ng-template>
+</p-dialog>
+
+<p-dialog [(visible)]="clienteDialog" [style]="{ width: '1100px' }" [modal]="true" header class="p-fluid">
+    <div class="card p-fluid">
+        <h3>Datos Básicos del Producto</h3>
+        <form [formGroup]="productoForm" (ngSubmit)="saveProduct()">
+            <div class="grid">
+                <div class="col-12 md:col-4">
+                    <label htmlFor="categoria" class="font-bold mb-2">Categoría</label>
+                    <app-selector-categoria (itemSeleccionado)="productoForm.get('categoria_id').setValue($event.id)" required></app-selector-categoria>
+                    <small *ngIf="productoForm.get('categoria_id').invalid && (productoForm.get('categoria_id').dirty || productoForm.get('categoria_id').touched)" class="p-error">Seleccione una categoría</small>
+                </div>
+                <div class="col-12 md:col-4">
+                    <label htmlFor="proveedor" class="font-bold mb-2">Distribuidor</label>
+                    <app-selector-proveedor (itemSeleccionado)="productoForm.get('proveedor_id').setValue($event.id)" required></app-selector-proveedor>
+                    <small *ngIf="productoForm.get('proveedor_id').invalid && (productoForm.get('proveedor_id').dirty || productoForm.get('proveedor_id').touched)" class="p-error">Seleccione un proveedor</small>
+                </div>
+                <div class="col-12 md:col-4">
+                    <label htmlFor="nombre" class="font-bold mb-2">Nombre</label>
+                    <input type="text" pInputText formControlName="nombre" (input)="copiarTexto()">
+                    <small *ngIf="productoForm.get('nombre').invalid && productoForm.get('nombre').touched" class="p-error">El nombre es obligatorio</small>
+                </div>
+                <!-- <div class="col-12 md:col-4">
+                    <label htmlFor="codigo" class="font-bold mb-2">Código</label>
+                    <input type="number" pInputText formControlName="codigo" required>
+                    <small *ngIf="productoForm.get('codigo').invalid && productoForm.get('codigo').touched" class="p-error">Ingrese un código válido</small>
+                    <small>Este es el código para escanear el producto</small>
+                </div> -->
+                <div class="col-12 md:col-8">
+                    <label htmlFor="descripcion" class="font-bold mb-2">Descripción</label>
+                    <textarea pInputTextarea formControlName="descripcion" rows="3" required></textarea>
+                </div>
+                <div class="col-12 md:col-4">
+                    <label htmlFor="fechaVencimiento" class="font-bold mb-2">Fecha Vencimiento</label>
+                    <input type="date" pInputText formControlName="fecha_vencimiento" required>
+                    <small *ngIf="productoForm.get('fecha_vencimiento').invalid && (productoForm.get('fecha_vencimiento').dirty || productoForm.get('fecha_vencimiento').touched)" class="p-error">Seleccione una fecha</small>
+                </div>
+                <div class="col-12 md:col-4" *ngIf="!producto.editar">
+                    <label htmlFor="laboratorio" class="font-bold mb-2">Laboratorio</label>
+                    <input type="text" pInputText formControlName="laboratorio" required>
+                    <!-- <small *ngIf="productoForm.get('laboratorio').invalid && productoForm.get('laboratorio').touched" class="p-error">El laboratorio es obligatorio</small> -->
+                </div>
+                <div class="col-12 md:col-4">
+                    <label htmlFor="lote" class="font-bold mb-2">N° Lote</label>
+                    <input type="text" pInputText formControlName="lote" required value="1">
+                </div>
+                <div class="col-12 md:col-4">
+                    <label htmlFor="stockActual" class="font-bold mb-2">Stock Actual</label>
+                    <input type="number" pInputText formControlName="stock_actual" required (input)="agregarABodega()">
+                    <small *ngIf="productoForm.get('stock_actual').invalid && productoForm.get('stock_actual').touched" class="p-error">Ingrese un stock válido</small>
+                </div>
+                <div class="col-12 md:col-4">
+                    <label htmlFor="precio" class="font-bold mb-2">Precio Venta</label>
+                    <p-inputNumber formControlName="precio" mode="decimal" ></p-inputNumber>
+                    <small *ngIf="productoForm.get('precio').invalid && productoForm.get('precio').touched" class="p-error">Ingrese un precio válido</small>
+                </div>
+
+                <!-- <div class="col-12 md:col-4">
+                    <label htmlFor="ubicacion" class="font-bold mb-2">Ubicación</label>
+                    <app-selector-ubicacion (itemSeleccionado)="productoForm.get('ubicacion_id').setValue($event.id)" required></app-selector-ubicacion>
+                    <small *ngIf="productoForm.get('ubicacion_id').invalid && (productoForm.get('ubicacion_id').dirty || productoForm.get('ubicacion_id').touched)" class="p-error">Seleccione una ubicación</small>
+                </div> -->
+
+
+            <div class="col-12" *ngIf="!producto.editar">
+                <h4>Asignar a Bodegas</h4>
+                <p-table [value]="bodegas" [columns]="['nombre', 'cantidad', 'acciones']">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th>Nombre de Bodega</th>
+                            <th>Cantidad</th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-bodega let-i="rowIndex">
+                        <tr>
+                            <td>{{bodega.nombre}}</td>
+                            <td>
+                                <div formArrayName="detalles">
+                                    <div *ngIf="detalles.controls.length > 0" [formGroupName]="i">
+                                        <input type="number" pInputText formControlName="cantidad" required (input)="agregarABodega()" />
+<small *ngIf="detalles.at(i).get('cantidad').invalid && detalles.at(i).get('cantidad').touched" class="p-error">La cantidad es requerida</small>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </div>
+
+            </div>
+        </form>
+    </div>
+    <ng-template pTemplate="footer">
+        <button pButton pRipple label="Guardar" icon="pi pi-check" class="p-button-success mr-2" (click)="saveProduct()"></button>
+        <button pButton pRipple label="Cancelar" icon="pi pi-times" class="p-button-danger" (click)="hideDialog()"></button>
+    </ng-template>
+</p-dialog>
+
+<p-dialog
+    [(visible)]="excelDialog"
+    [style]="{ width: '70%' }"
+    [modal]="true"
+    header="Cargar Excel"
+    class="p-fluid"
+>
+    <div class="grid">
+        <div class="col-12 mb-3">
+            <div class="field">
+                <label for="excelFile" class="font-bold mb-2">Seleccionar archivo Excel</label>
+                <input
+                    type="file"
+                    id="excelFile"
+                    accept=".xlsx,.xls"
+                    class="p-inputtext"
+                    (change)="onExcelFileSelect($event)"
+                />
+            </div>
+        </div>
+
+        <div class="col-12 mb-3">
+            <div class="field">
+                <label for="excelFile" class="font-bold mb-2">Productos a Subir: {{resultImpoFile.length}}</label><br>
+                <label for="excelFile" class="font-bold mb-2">{{resultImport.message}}</label>
+                </div>
+                <div class="field">
+                    <p-table [value]="resultImport.errores" *ngIf="resultImport.errores && resultImport.errores.length > 0">
+                        <ng-template pTemplate="header">
+                            <tr>
+                                <th>Errores</th>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-error>
+                            <tr>
+                                <td>{{error}}</td>
+                            </tr>
+                        </ng-template>
+                    </p-table>
+                    </div>
+
+        </div>
+
+    </div>
+    <ng-template pTemplate="footer">
+        <button pButton pRipple label="Procesar datos" icon="pi pi-check" class="p-button-success mr-2" (click)="processExcelData()" [disabled]="resultImpoFile.length==0" ></button>
+        <button pButton pRipple label="Cancelar" icon="pi pi-times" class="p-button-danger" (click)="excelDialog = false"></button>
+    </ng-template>
+</p-dialog>
+
+

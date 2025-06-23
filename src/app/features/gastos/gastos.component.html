@@ -1,0 +1,318 @@
+<p-toast></p-toast>
+<div class="grid">
+    <div class="col-12">
+        <div class="card p-fluid">
+            <div class="grid">
+                <div class="col-12 md:col-6 lg:col-6">
+                    <h3>{{ nombreModulo }}</h3>
+                </div>
+            </div>
+            <div class="grid">
+
+                <div class="col-12 md:col-3">
+                    <div class="field">
+                        <label for="startDate">Fecha Inicio</label>
+                        <p-calendar
+                            id="startDate"
+                            appendTo="body"
+                            [(ngModel)]="startDate"
+                            [showIcon]="true"
+                            [showTime]="false"
+                            dateFormat="yy-mm-dd"
+                            placeholder="Selecciona la fecha de inicio">
+                        </p-calendar>
+                    </div>
+                </div>
+                <div class="col-12 md:col-3">
+                    <div class="field">
+                        <label for="endDate">Fecha Fin</label>
+                        <p-calendar
+                            appendTo="body"
+                            id="endDate"
+                            [(ngModel)]="endDate"
+                            [showIcon]="true"
+                            [showTime]="false"
+                            dateFormat="yy-mm-dd"
+                            placeholder="Selecciona la fecha de fin">
+                        </p-calendar>
+                    </div>
+                </div>
+
+                </div>
+
+                <div class="grid mt-2">
+                    <div class="col-12 md:col-2">
+                        <p-button label="Buscar" icon="pi pi-filter" (click)="filtrarPorFecha()"></p-button>
+                    </div>
+                    <div class="col-12 md:col-2">
+                        <p-button label="Crear" styleClass="p-button-success" icon="pi pi-plus" (click)="openNew()"></p-button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+<div class="grid">
+    <div class="col-12">
+        <div class="card px-6 py-6">
+            <p-table
+                #dt
+                [value]="data"
+                [columns]="cols"
+                [rows]="10"
+                [globalFilterFields]="['nombre', 'posicion', 'numero', 'estado']"
+                [paginator]="true"
+                [rowsPerPageOptions]="[10, 20, 30]"
+                [showCurrentPageReport]="true"
+                [rowHover]="true"
+                responsiveLayout="scroll"
+                currentPageReportTemplate="Mostrando {first} to {last} de {totalRecords} registros"
+                dataKey="id"
+            >
+                <ng-template pTemplate="caption">
+                    <div
+                        class="flex flex-column md:flex-row md:justify-content-between md:align-items-center"
+                    >
+                        <h5 class="m-0">Información General</h5>
+                        <span class="block mt-2 md:mt-0 p-input-icon-left">
+                            <i class="pi pi-search"></i>
+                            <input
+                                (input)="onGlobalFilter(dt, $event)"
+                                pInputText
+                                type="text"
+                                placeholder="Buscar..."
+                                class="w-full sm:w-auto"
+                            />
+                        </span>
+                    </div>
+                </ng-template>
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th pSortableColumn="id">
+                            Código
+                            <p-sortIcon field="id"></p-sortIcon>
+                        </th>
+                        <th pSortableColumn="tipogasto.nombre">
+                            Tipo Gasto
+                            <p-sortIcon field="tipogasto.nombre"></p-sortIcon>
+                        </th>
+                        <th pSortableColumn="descripcion">
+                            Descripción
+                            <p-sortIcon field="descripcion"></p-sortIcon>
+                        </th>
+                        <th pSortableColumn="fecha">
+                            Fecha
+                            <p-sortIcon field="fecha"></p-sortIcon>
+                        </th>
+                        <th pSortableColumn="valortotal">
+                            Valor
+                            <p-sortIcon field="valortotal"></p-sortIcon>
+                        </th>
+                        <th pSortableColumn="estado">
+                            Estado
+                            <p-sortIcon field="estado"></p-sortIcon>
+                        </th>
+                        <th></th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-item>
+                    <tr>
+                        <td style="width: 10%; min-width: 10rem">
+                            <span class="p-column-title">Código</span>
+                            {{ item.id }}
+                        </td>
+                        <td style="width: 10%; min-width: 10rem">
+                            <span class="p-column-title">Tipo Gasto</span>
+                            {{ item.tipogasto?.nombre }}
+                        </td>
+                        <td style="width: 32%; min-width: 10rem">
+                            <span class="p-column-title">Descripción</span>
+                            {{ item.descripcion }}
+                        </td>
+                        <td style="width: 32%; min-width: 10rem">
+                            <span class="p-column-title">Fecha</span>
+                            {{ item.fecha }}
+                        </td>
+
+                        <td style="width: 32%; min-width: 10rem">
+                            <span class="p-column-title">Valor</span>
+                            {{ item.valortotal | currency }}
+                        </td>
+
+                        <td style="width: 26%; min-width: 10rem">
+                            <span class="p-column-title">Estado</span>
+                            {{ item.estado == "1" ? "ACTIVO" : "BLOQUEADO" }}
+                        </td>
+                        <td>
+                            <div class="flex">
+                                <button
+                                    (click)="edit(item)"
+                                    pButton
+                                    pRipple
+                                    icon="pi pi-pencil"
+                                    class="p-button-rounded p-button-success mr-2"
+                                ></button>
+                                <p-button
+                                    (click)="bloqueoCliente(item)"
+                                    icon="pi pi-check"
+                                    styleClass="p-button-rounded p-button-warning"
+                                ></p-button>
+                            </div>
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+    </div>
+</div>
+
+<p-dialog
+    [(visible)]="clienteDialog"
+    [style]="{ width: '650px' }"
+    [modal]="true"
+    header
+    class="p-fluid"
+>
+    <div class="grid">
+        <div class="col-12">
+            <div class="card p-fluid">
+                <div class="grid">
+                    <div class="col-12 md:col-6 lg:col-6">
+                        <h3>Datos Básicos</h3>
+                    </div>
+                </div>
+                <div class="field grid">
+                    <label htmlFor="name3" class="col-12 mb-1 md:col-1 md:mb-0">
+                        <b>Tipo Gasto</b>
+                    </label>
+                    <div class="col-12 md:col-12">
+                        <app-selector-tipo-gasto
+                        (itemSeleccionado)="getCategoria($event)"
+                    ></app-selector-tipo-gasto>
+                    </div>
+                </div>
+
+                <!-- <div class="field grid">
+                    <label htmlFor="name3" class="col-12 mb-1 md:col-1 md:mb-0">
+                        <b>Tipo Caja</b>
+                    </label>
+                    <div class="col-12 md:col-12">
+                        <p-dropdown
+                            [options]="tipoCajaOptions"
+                            [(ngModel)]="gasto.tipocaja"
+                            optionLabel="label"
+                            optionValue="value"
+                            appendTo="body"
+                            placeholder="Seleccione el tipo de caja"
+                        ></p-dropdown>
+                    </div>
+                </div> -->
+
+
+                <div class="field grid" >
+                    <label htmlFor="name3" class="col-12 mb-1 md:col-1 md:mb-0">
+                        <b>Fecha</b>
+                    </label>
+                    <div class="col-12 md:col-12">
+                        <p-calendar appendTo="body" id="fecha" [(ngModel)]="today" [showIcon]="true" dateFormat="yy-mm-dd"></p-calendar>
+                    </div>
+                </div>
+
+
+                <div class="field grid">
+                    <label htmlFor="name3" class="col-12 mb-1 md:col-1 md:mb-0">
+                        <b>Descripción</b>
+                    </label>
+                    <div class="col-12 md:col-12">
+                        <textarea
+                            pInputTextarea
+                            [(ngModel)]="gasto.descripcion"
+                            rows="5"
+                            cols="30"
+                        ></textarea>
+                    </div>
+                </div>
+
+                <div class="field grid" >
+                    <label htmlFor="name3" class="col-12 mb-1 md:col-1 md:mb-0">
+                        <b>Valor</b>
+                    </label>
+                    <div class="col-12 md:col-12">
+                        <p-inputNumber
+                            [(ngModel)]="gasto.valortotal"
+                            mode="decimal"
+                            [minFractionDigits]="2"
+                            [maxFractionDigits]="2"
+                            inputId="valor"
+                            [showButtons]="true"
+                            [step]="1"
+                            [useGrouping]="true"
+                            placeholder="Ingrese el valor"
+                            pInputText
+                        ></p-inputNumber>
+                    </div>
+                </div>
+
+
+
+            </div>
+        </div>
+    </div>
+
+    <ng-template pTemplate="footer">
+        <button
+            (click)="save()"
+            pButton
+            pRipple
+            label="Guardar"
+            icon="pi pi-check"
+            class="p-button-success"
+        ></button>
+        <button
+            (click)="hideDialog()"
+            pButton
+            pRipple
+            label="Cancelar"
+            icon="pi pi-times"
+            class="p-button-danger"
+        ></button>
+    </ng-template>
+</p-dialog>
+
+<p-dialog
+    [(visible)]="deleteProductDialog"
+    [modal]="true"
+    [style]="{ width: '450px' }"
+    header="Confirmar"
+>
+    <div class="flex align-items-center justify-content-center">
+        <i
+            class="pi pi-exclamation-triangle mr-3"
+            style="font-size: 2rem"
+        ></i>
+        <span *ngIf="gasto">
+           ¿ Esta seguro de Cambiar el estado al Registro ?
+
+        </span>
+    </div>
+    <ng-template pTemplate="footer">
+        <button
+            (click)="confirmDelete()"
+            pButton
+            pRipple
+            icon="pi pi-check"
+            class="p-button-success"
+            label="Aceptar"
+        ></button>
+        <button
+            (click)="deleteProductDialog = false"
+            pButton
+            pRipple
+            icon="pi pi-times"
+            class="p-button-danger"
+            label="Cancelar"
+        ></button>
+    </ng-template>
+</p-dialog>

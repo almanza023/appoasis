@@ -1,0 +1,83 @@
+<app-loading *ngIf="loading"></app-loading>
+<p-dialog
+    [(visible)]="clienteDialog"
+    [style]="{ width: '95%' }"
+    [modal]="true"
+    header
+    class="p-fluid"
+>
+    <div class="grid">
+        <div class="col-12">
+            <div class="card p-fluid">
+                <div class="grid">
+                    <div class="col-12 md:col-6 lg:col-6">
+                        <h3>Buscar Cliente</h3>
+                    </div>
+                </div>
+
+
+<p-table #dt
+    [value]="clientes"
+    [rows]="10"
+    [paginator]="true"
+    [globalFilterFields]="['nombre', 'numerodocumento', 'telefono']"
+    [rowHover]="true"
+    dataKey="id"
+    styleClass="p-datatable-sm"
+    [rowsPerPageOptions]="[5,10,25]"
+    [showCurrentPageReport]="true"
+    currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros">
+    <ng-template pTemplate="caption">
+        <div
+            class="flex flex-column md:flex-row md:justify-content-between md:align-items-center"
+        >
+            <h5 class="m-0">Información General</h5>
+            <span class="block mt-2 md:mt-0 p-input-icon-left">
+                <i class="pi pi-search"></i>
+                <input
+                    (input)="onGlobalFilter(dt, $event)"
+                    pInputText
+                    type="text"
+                    placeholder="Buscar..."
+                    class="w-full sm:w-auto"
+                />
+            </span>
+        </div>
+    </ng-template>
+    <ng-template pTemplate="header">
+        <tr>
+            <th>Nombre</th>
+            <th>Documento</th>
+            <th>Teléfono</th>
+            <th>Acciones</th>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-cliente>
+        <tr>
+            <td>{{cliente.nombre}}</td>
+            <td>{{cliente.numerodocumento}}</td>
+            <td>{{cliente.telefono}}</td>
+            <td>
+                <button pButton pRipple icon="pi pi-check" class="p-button-rounded p-button-success mr-2"
+                    (click)="selectCliente(cliente)"></button>
+            </td>
+        </tr>
+    </ng-template>
+</p-table>
+
+
+            </div>
+        </div>
+        </div>
+
+    <ng-template pTemplate="footer">
+        <button
+            (click)="clienteDialog = false"
+            pButton
+            pRipple
+            label="Cancelar"
+            icon="pi pi-times"
+            class="p-button-danger"
+        ></button>
+    </ng-template>
+</p-dialog>

@@ -1,0 +1,126 @@
+<p-toast></p-toast>
+<app-loading *ngIf="loading"></app-loading>
+<div class="grid">
+
+    <div class="col-12 md:col-12" *ngIf="data && data.base_inicial">
+        <div class="card">
+            <div class="flex justify-content-end mb-3">
+                <p-button label="Actualizar" icon="pi pi-refresh" (click)="reloadPage()" styleClass="p-button-success"></p-button>
+            </div>
+            <h5><b>Detalle de Caja  </b></h5>
+            <h5><b>N° de Apertura de Caja: {{ data?.caja_id}} </b></h5>
+            <h5><b>Fecha Inicio: {{ data?.fecha_inicio}} </b></h5>
+            <h5><b>Estado: {{ data?.estado_caja}} </b></h5>
+            <br>
+            <div class="grid">
+                <div class="col-6">
+                    <p-table [value]="[
+                        {concepto: 'Base Inicial', valor: data.base_inicial},
+                        {concepto: 'Total Ventas', valor: data.totalventas},
+                        {concepto: 'Total Gastos', valor: data.totalgastos},
+                        {concepto: 'Total Neto', valor: data.totalneto}
+                    ]">
+                        <ng-template pTemplate="header">
+                            <tr>
+                                <th>Concepto</th>
+                                <th>Valor</th>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-item>
+                            <tr>
+                                <td>{{item.concepto}}</td>
+                                <td>{{item.valor | currency}}</td>
+                            </tr>
+                        </ng-template>
+                    <ng-template pTemplate="footer">
+                        <tr>
+                            <td colspan="2" class="flex justify-content-between">
+                                <p-button label="Ver Historial de Ventas" icon="pi pi-file" (click)="verHistorialVentas()" styleClass="p-button-info"></p-button>
+                                <p-button label="Ver Historial de Gastos" icon="pi pi-file" (click)="verHistorialGastos()" styleClass="p-button-warning"></p-button>
+                                <!-- <app-ticket-cierre-caja [data]="dataReport"></app-ticket-cierre-caja> -->
+                                 <button pButton icon="pi pi-print" styleClass="p-button-rounded p-button-primary" (click)="descargarPDF()"> Imprimir</button>
+                            </td>
+                        </tr>
+                    </ng-template>
+
+                    </p-table>
+                </div>
+                <div class="col-3" *ngIf="data.pagos.length>0">
+                    <h5><b>Detalle de Pagos</b></h5>
+                    <p-table [value]="data.pagos">
+                        <ng-template pTemplate="header">
+                            <tr>
+                                <th>Concepto</th>
+                                <th>Valor</th>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-item>
+                            <tr>
+                                <td>{{item.nombre}}</td>
+                                <td>{{item.total | currency}}</td>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="footer">
+                            <tr>
+                                <td><strong>Total</strong></td>
+                                <td><strong>{{ getTotalPagos() | currency }}</strong></td>
+                            </tr>
+                        </ng-template>
+                    </p-table>
+                </div>
+                <div class="col-3">
+                    <h5><b>Forma de Venta</b></h5>
+                    <p-table [value]="dataReport.ventasPorTipo">
+                        <ng-template pTemplate="header">
+                            <tr>
+                                <th>Forma de Pago</th>
+                                <th>Valor</th>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-item>
+                            <tr>
+                                <td>{{item.nombre}}</td>
+                                <td>{{item.total | currency}}</td>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="footer">
+                            <tr>
+                                <td colspan=""><strong>Total </strong></td>
+                                <td><strong>{{dataReport.totalventas | currency}}</strong></td>
+                            </tr>
+                        </ng-template>
+                    </p-table>
+                </div>
+                <div class="col-12" *ngIf="data.estado==1 && rol=='1'">
+                    <p-button *ngIf="!bloquear" label="Cerrar Caja"  icon="pi pi-lock" styleClass="p-button-success w-full" (click)="confirm1(data)" [style]="{'background-color': 'green', 'border-color': 'green'}"></p-button>
+            </div>
+        </div>
+    </div>
+</div>
+<p-confirmDialog [style]="{width: '90%', maxWidth: '50vw'}"></p-confirmDialog>
+<p-dialog
+    header="Historial de Movimientos"
+    [(visible)]="historialDialog"
+    [modal]="true"
+    [style]="{width: '50vw'}"
+    [draggable]="false"
+    [resizable]="false">
+    <p-table [value]="historial" [paginator]="true" [rows]="10" responsiveLayout="scroll">
+        <ng-template pTemplate="header">
+            <tr>
+                <th>Código</th>
+                <th>Fecha</th>
+                <th>Valor</th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-item>
+            <tr>
+                <td>{{item.id}}</td>
+                <td>{{item.created_at | date:'dd/MM/yyyy HH:mm'}}</td>
+                <td *ngIf="item.total; else noTotal">{{item.total | currency}}</td>
+                <ng-template #noTotal><td>{{item.valortotal | currency}}</td></ng-template>
+            </tr>
+        </ng-template>
+    </p-table>
+</p-dialog>
+

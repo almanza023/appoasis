@@ -1,0 +1,5 @@
+{
+    "require": {
+        "crabbly/fpdf-laravel": "^1.0"
+    }
+}

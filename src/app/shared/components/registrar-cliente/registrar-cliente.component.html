@@ -1,0 +1,118 @@
+
+<p-toast></p-toast>
+<p-dialog
+    [(visible)]="clienteDialog"
+    [style]="{ width: '650px' }"
+    [modal]="true"
+    header
+    class="p-fluid"
+>
+    <div class="grid">
+        <div class="col-12">
+            <div class="card p-fluid">
+                <div class="grid">
+                    <div class="col-12 md:col-6 lg:col-6">
+                        <h3>Datos Básicos</h3>
+                    </div>
+                </div>
+                <div class="field grid">
+                    <label htmlFor="name3" class="col-12 mb-1 md:col-1 md:mb-0">
+                        <b>Nombres</b>
+                    </label>
+                    <div class="col-12 md:col-12">
+                        <input
+                            type="text"
+                            pInputText
+                            [(ngModel)]="cliente.nombre"
+                        />
+                    </div>
+                </div>
+                <div class="field grid">
+                    <label htmlFor="name3" class="col-12 mb-1 md:col-1 md:mb-0">
+                        <b>Número Documento</b>
+                    </label>
+                    <div class="col-12 md:col-12">
+                        <input
+                            type="number"
+                            pInputText
+                            [(ngModel)]="cliente.numerodocumento"
+                        />
+                    </div>
+                </div>
+
+                <div class="field grid">
+                    <label htmlFor="name3" class="col-12 mb-1 md:col-1 md:mb-0">
+                        <b>Teléfono</b>
+                    </label>
+                    <div class="col-12 md:col-12">
+                        <input
+                            type="number"
+                            pInputText
+                            [(ngModel)]="cliente.telefono"
+                        />
+                    </div>
+                </div>
+
+                <div class="field grid">
+                    <label htmlFor="name3" class="col-12 mb-1 md:col-1 md:mb-0">
+                        <b>Dirección</b>
+                    </label>
+                    <div class="col-12 md:col-12">
+                        <input
+                            type="text"
+                            pInputText
+                            [(ngModel)]="cliente.direccion"
+                        />
+                    </div>
+                </div>
+
+                <div class="field grid">
+                    <label htmlFor="name3" class="col-12 mb-1 md:col-1 md:mb-0">
+                        <b>Ciudad</b>
+                    </label>
+                    <div class="col-12 md:col-12">
+                        <input
+                            type="text"
+                            pInputText
+                            [(ngModel)]="cliente.ciudad"
+                        />
+                    </div>
+                </div>
+
+                <div class="field grid">
+                    <label htmlFor="name3" class="col-12 mb-1 md:col-1 md:mb-0">
+                        <b>Nombre Negocio</b>
+                    </label>
+                    <div class="col-12 md:col-12">
+                        <input
+                            type="text"
+                            pInputText
+                            [(ngModel)]="cliente.nombrenegocio"
+                        />
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+        </div>
+
+    <ng-template pTemplate="footer">
+        <button
+            (click)="save()"
+            pButton
+            pRipple
+            label="Guardar"
+            icon="pi pi-check"
+            class="p-button-success"
+        ></button>
+        <button
+            (click)="clienteDialog = false"
+            pButton
+            pRipple
+            label="Cancelar"
+            icon="pi pi-times"
+            class="p-button-danger"
+        ></button>
+    </ng-template>
+</p-dialog>

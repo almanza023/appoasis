@@ -1,0 +1,106 @@
+
+<button pButton icon="pi pi-print" styleClass="p-button-rounded p-button-primary" (click)="printTicket()"> Imprimir</button>
+<div  style="display: none;" >
+<div id="ticket-pos" class="ticket" >
+    <p>***************************************************</p>
+    <h1>{{ tienda }}</h1>
+    <p>{{ nit }}</p>
+    <p>{{ direccion }}</p>
+    <p>Tel: {{ telefono }}</p>
+    <p>***************************************************</p>
+    <div *ngIf="data">
+        <p style="font-size: 1.4em"><b>CIERRE DE CAJA</b></p>
+        <p style="font-size: 1.4em">Fecha Apertura: {{ data?.fecha_inicio }}</p>
+    </div>
+    <p>***************************************************</p>
+
+    <p>***************************************************</p>
+    <div *ngIf="data">
+        <p style="font-size: 1.4em"><b>VENTAS</b></p>
+    </div>
+    <p>***************************************************</p>
+    <div class="items">
+      <table>
+        <tr>
+          <th style="text-align: center;">Fecha</th>
+          <th style="text-align: right;">Total</th>
+        </tr>
+        <tr *ngFor="let item of data?.ventas">
+          <td style="text-align: center;">{{ item.fecha | date:'dd/MM/yyyy HH:mm:ss'}}</td>
+          <td style="text-align: right;">{{ item.total | currency:'COP':'symbol-narrow':'1.0-0' }}</td>
+        </tr>
+      </table>
+    </div>
+
+    <p>***************************************************</p>
+    <div *ngIf="data">
+        <p style="font-size: 1.4em"><b>GASTOS</b></p>
+    </div>
+    <p>***************************************************</p>
+    <div class="items">
+      <table>
+        <tr>
+          <th style="text-align: center;">Fecha</th>
+          <th style="text-align: center;">Tipo</th>
+          <th style="text-align: right;">Valor</th>
+        </tr>
+        <tr *ngFor="let item of data?.gastos">
+          <td style="text-align: center;">{{ item.fecha | date:'dd/MM/yyyy HH:mm:ss' }}</td>
+          <td style="text-align: center;">{{ item.tipo }}</td>
+          <td style="text-align: right;">{{ item.total | currency:'COP':'symbol-narrow':'1.0-0' }}</td>
+        </tr>
+      </table>
+    </div>
+
+    <p>***************************************************</p>
+    <div *ngIf="data">
+        <p style="font-size: 1.4em"><b>MEDIOS PAGOS</b></p>
+    </div>
+    <p>***************************************************</p>
+    <div class="items">
+      <table>
+        <tr>
+          <th style="text-align: center;">Tipo</th>
+          <th style="text-align: right;">Total</th>
+        </tr>
+        <tr *ngFor="let item of data?.pagos">
+          <td style="text-align: center;">{{ item.nombre }}</td>
+          <td style="text-align: right;">{{ item.total | currency:'COP':'symbol-narrow':'1.0-0' }}</td>
+        </tr>
+      </table>
+    </div>
+
+    <p>***************************************************</p>
+    <div *ngIf="data">
+        <p style="font-size: 1.4em"><b>RESUMEN DE CAJA</b></p>
+    </div>
+    <p>***************************************************</p>
+    <div class="items">
+      <table>
+        <tr>
+          <th style="text-align: right;">Base Incial</th>
+          <td style="text-align: right;">{{data?.base_inicial | currency:'COP':'symbol-narrow':'1.0-0'}}</td>
+        </tr>
+        <tr>
+            <th style="text-align: right;">Total Ventas</th>
+            <td style="text-align: right;">{{data?.totalventas | currency:'COP':'symbol-narrow':'1.0-0'}}</td>
+          </tr>
+          <tr>
+            <th style="text-align: right;">Total Gastos</th>
+            <td style="text-align: right;">{{data?.totalgastos | currency:'COP':'symbol-narrow':'1.0-0'}}</td>
+          </tr>
+          <tr>
+            <th style="text-align: right;">Total Neto</th>
+            <td style="text-align: right;">{{data?.totalneto | currency:'COP':'symbol-narrow':'1.0-0'}}</td>
+          </tr>
+      </table>
+    </div>
+
+
+    <p>***************************************************</p>
+    <p>¡Información Generada por Sistema POS!</p>
+    <p>Fecha Impresion: {{ fechaActual | date:'dd/MM/yyyy HH:mm:ss' }}</p>
+    <p>***************************************************</p>
+  </div>
+</div>
+

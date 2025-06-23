@@ -1,0 +1,280 @@
+<p-toast></p-toast>
+<app-loading *ngIf="loading"></app-loading>
+<div class="grid">
+    <div class="col-12">
+        <div class="card p-fluid">
+            <div class="grid">
+                <div class="col-12 md:col-6 lg:col-6">
+                    <h3>{{ nombreModulo }}</h3>
+                </div>
+            </div>
+            <div class="field grid justify-content-start">
+                <div class="col-12 md:col-2 flex gap-2">
+                    <p-button
+                        label="Crear"
+                        styleClass="p-button-success"
+                        icon="pi pi-plus"
+                        (click)="openNew()"
+                    ></p-button>
+                    <p-button
+                        label="Consultar"
+                        styleClass="p-button-info"
+                        icon="pi pi-search"
+                        (click)="getDataAll()"
+                    ></p-button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="grid">
+    <div class="col-12">
+        <div class="card px-6 py-6">
+            <p-table
+                #dt
+                [value]="data"
+                [columns]="cols"
+                [rows]="10"
+                [globalFilterFields]="['fecha', 'monto_inicial', 'user_id', 'estado']"
+                [paginator]="true"
+                [rowsPerPageOptions]="[10, 20, 30]"
+                [showCurrentPageReport]="true"
+                [rowHover]="true"
+                responsiveLayout="scroll"
+                currentPageReportTemplate="Mostrando {first} to {last} de {totalRecords} registros"
+                dataKey="id"
+            >
+                <ng-template pTemplate="caption">
+                    <div
+                        class="flex flex-column md:flex-row md:justify-content-between md:align-items-center"
+                    >
+                        <h5 class="m-0">Información General</h5>
+                        <span class="block mt-2 md:mt-0 p-input-icon-left">
+                            <i class="pi pi-search"></i>
+                            <input
+                                (input)="onGlobalFilter(dt, $event)"
+                                pInputText
+                                type="text"
+                                placeholder="Buscar..."
+                                class="w-full sm:w-auto"
+                            />
+                        </span>
+                    </div>
+                </ng-template>
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th pSortableColumn="id">
+                            Código
+                            <p-sortIcon field="id"></p-sortIcon>
+                        </th>
+                        <th pSortableColumn="fecha">
+                            Fecha Apertura
+                            <p-sortIcon field="fecha"></p-sortIcon>
+                        </th>
+                        <th pSortableColumn="fecha_cierre">
+                            Fecha Cierre
+                            <p-sortIcon field="fecha_cierre"></p-sortIcon>
+                        </th>
+                        <th pSortableColumn="monto_inicial">
+                            Base
+                            <p-sortIcon field="monto_inicial"></p-sortIcon>
+                        </th>
+                        <th pSortableColumn="totalventas">
+                            Total Ventas
+                            <p-sortIcon field="totalventas"></p-sortIcon>
+                        </th>
+                        <th pSortableColumn="totalgastos">
+                            Total Gastos
+                            <p-sortIcon field="totalgastos"></p-sortIcon>
+                        </th>
+                        <th pSortableColumn="utilidad">
+                            Utilidad
+                            <p-sortIcon field="utilidad"></p-sortIcon>
+                        </th>
+                        <th pSortableColumn="estado">
+                            Estado
+                            <p-sortIcon field="estado"></p-sortIcon>
+                        </th>
+                        <th></th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-item>
+                    <tr [ngStyle]="{'background-color': item.estado === 1 ? '#abebc6' : 'transparent'}">
+                        <td style="width: 10%; min-width: 10rem">
+                            <span class="p-column-title">Código</span>
+                            {{ item.id }}
+                        </td>
+                        <td style="width: 10%; min-width: 10rem">
+                            <span class="p-column-title">Fecha Apertura</span>
+                            {{ item.fecha }}
+                        </td>
+                        <td style="width: 32%; min-width: 10rem">
+                            <span class="p-column-title">Fecha Cierre</span>
+                            {{ item.fecha_cierre }}
+                        </td>
+                        <td style="width: 32%; min-width: 10rem">
+                            <span class="p-column-title">Base</span>
+                            {{ item.monto_inicial | currency }}
+                        </td>
+                        <td style="width: 32%; min-width: 10rem">
+                            <span class="p-column-title">Total Ventas</span>
+                            {{ item.totalventas | currency  }}
+                        </td>
+                        <td style="width: 32%; min-width: 10rem">
+                            <span class="p-column-title">Total Gastos</span>
+                            {{ item.totalgastos | currency }}
+                        </td>
+                        <td style="width: 32%; min-width: 10rem">
+                            <span class="p-column-title">Utilidad</span>
+                            {{ item.utilidad | currency }}
+                        </td>
+
+                        <td style="width: 26%; min-width: 10rem">
+                            <span class="p-column-title">Estado</span>
+                            {{ item.estado == "1" ? "ABIERTO" : item.estado == "3" ? "ANULADA" : "CERRADA" }}
+                        </td>
+                        <td>
+                            <div class="flex">
+                                <p-button *ngIf="item.estado==1"
+                                    (click)="bloqueoCliente(item)"
+                                    icon="pi pi-check"
+                                    styleClass="p-button-rounded p-button-warning"
+                                ></p-button>
+                            </div>
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+    </div>
+</div>
+
+<p-dialog
+    [(visible)]="clienteDialog"
+    [style]="{ width: '450px' }"
+    [modal]="true"
+    header
+    class="p-fluid"
+>
+    <div class="grid">
+        <div class="col-12">
+            <div class="card p-fluid">
+                <div class="grid">
+                    <div class="col-12 md:col-6 lg:col-6">
+                        <h3>Datos Básicos</h3>
+                    </div>
+                </div>
+                <div class="field grid">
+                    <label htmlFor="bodega" class="col-12 mb-1 md:col-1 md:mb-0">
+                        <b>Seleccionar Bodega</b>
+                    </label>
+                    <div class="col-12 md:col-12">
+                        <app-selector-bodega
+                            (itemSeleccionado)="caja.bodega_id = $event.id"
+                        ></app-selector-bodega>
+                    </div>
+                </div>
+
+                <div class="field grid">
+                    <label htmlFor="name3" class="col-12 mb-1 md:col-1 md:mb-0">
+                        <b>Fecha Inicio</b>
+                    </label>
+                    <div class="col-12 md:col-12">
+                        <input
+                            type="date"
+                            pInputText
+                            [(ngModel)]="caja.fecha"
+                        />
+                    </div>
+                </div>
+                <div class="field grid">
+                    <label htmlFor="name3" class="col-12 mb-1 md:col-1 md:mb-0">
+                        <b>Base Inicial</b>
+                    </label>
+                    <div class="col-12 md:col-12">
+                        <p-inputNumber
+                            [(ngModel)]="caja.monto_inicial"
+                            mode="decimal"
+                            [minFractionDigits]="2"
+                            [maxFractionDigits]="2"
+                            [showButtons]="true"
+                            [step]="1"
+                            [useGrouping]="true"
+                            placeholder="Ingrese el monto inicial"
+                        ></p-inputNumber>
+                    </div>
+                </div>
+
+                <div class="field grid">
+                    <label htmlFor="name3" class="col-12 mb-1 md:col-1 md:mb-0">
+                        <b>Observaciones</b>
+                    </label>
+                    <div class="col-12 md:col-12">
+                        <textarea
+                            pInputTextarea
+                            [(ngModel)]="caja.descripcion"
+                            rows="5"
+                            cols="30"
+                        ></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+
+    <ng-template pTemplate="footer">
+        <button
+            (click)="save()"
+            pButton
+            pRipple
+            label="Guardar"
+            icon="pi pi-check"
+            class="p-button-success"
+        ></button>
+        <button
+            (click)="hideDialog()"
+            pButton
+            pRipple
+            label="Cancelar"
+            icon="pi pi-times"
+            class="p-button-danger"
+        ></button>
+    </ng-template>
+</p-dialog>
+
+<p-dialog
+    [(visible)]="deleteProductDialog"
+    [modal]="true"
+    [style]="{ width: '450px' }"
+    header="Confirmar"
+>
+    <div class="flex align-items-center justify-content-center">
+        <i
+            class="pi pi-exclamation-triangle mr-3"
+            style="font-size: 2rem"
+        ></i>
+        <span *ngIf="caja">
+            Esta seguro de Cambiar el estado al Registro
+            <b>{{ caja.fecha }}</b>?
+        </span>
+    </div>
+    <ng-template pTemplate="footer">
+        <button
+            (click)="confirmDelete()"
+            pButton
+            pRipple
+            icon="pi pi-check"
+            class="p-button-success"
+            label="Aceptar"
+        ></button>
+        <button
+            (click)="deleteProductDialog = false"
+            pButton
+            pRipple
+            icon="pi pi-times"
+            class="p-button-danger"
+            label="Cancelar"
+        ></button>
+    </ng-template>
+</p-dialog>
