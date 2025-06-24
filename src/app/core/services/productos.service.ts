@@ -101,6 +101,11 @@ export class ProductosService {
     return this.http.post<any>(url, item, {headers});
   }
 
+   postImportarAjuste(item:any): Observable<any> {
+    const headers = { 'Authorization': 'Bearer '+localStorage.getItem('token') }
+    let url=`${environment.baseURL}/productos-ajuste`;
+    return this.http.post<any>(url, item, {headers});
+  }
 
 
 

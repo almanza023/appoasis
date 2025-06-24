@@ -138,15 +138,15 @@ export class RegistroVentasComponent implements OnInit {
     }
 
     agregarProducto(producto: any, cantidad: number, stock_general: number) {
-        if (cantidad > stock_general) {
-            this.messageService.add({
-                severity: 'warn',
-                summary: 'Advertencia',
-                detail: `La cantidad no puede superar el stock general`,
-                life: 3000,
-            });
-            return;
-        }
+        // if (cantidad > stock_general) {
+        //     this.messageService.add({
+        //         severity: 'warn',
+        //         summary: 'Advertencia',
+        //         detail: `La cantidad no puede superar el stock general`,
+        //         life: 3000,
+        //     });
+        //     return;
+        // }
 
         if (cantidad > 0) {
             const detalle = {
@@ -219,6 +219,7 @@ export class RegistroVentasComponent implements OnInit {
                        this.cliente=this.infoVenta.cliente;
                        this.venta=this.infoVenta.venta;
                        this.selectorFormaVentaComponent.filtrar(this.infoVenta.venta.forma_venta);
+                       this.venta_id = this.infoVenta.venta.id;
 
                     },
                     (error) => {

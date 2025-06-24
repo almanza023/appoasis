@@ -24,7 +24,7 @@
 
                     <div class="field">
                         <label for="endDate"></label><br>
-                        <p-button label="Filtrar" icon="pi pi-filter" (click)="consultar()" styleClass="p-button-info">
+                        <p-button label="Consultar" icon="pi pi-filter" (click)="consultar()" styleClass="p-button-info">
                         </p-button>
                     </div>
 
@@ -39,6 +39,7 @@
             <br>
             <div class="grid">
                 <div class="col-12">
+                    <p-button label="Exportar" icon="pi pi-file" (click)="exportarPDF()" styleClass="p-button-success"></p-button>
                     <p-table
                     #dt
                     [value]="data"
@@ -101,7 +102,7 @@
                         </tr>
                     </ng-template>
                 </p-table>
-                <p-button label="Exportar" icon="pi pi-file" (click)="exportarPDF()" styleClass="p-button-success"></p-button>
+
                 </div>
             </div>
         </div>

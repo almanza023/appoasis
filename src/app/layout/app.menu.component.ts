@@ -183,7 +183,7 @@ export class AppMenuComponent implements OnInit {
 
                     },
                     {
-                        label: 'Reporte Historico Caja Menor',
+                        label: 'Reporte Historico',
                         icon: 'pi pi-fw pi-align-justify',
                         command: () => this.reloadCurrentRoute('reportes/caja-menor')
 

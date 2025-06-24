@@ -125,7 +125,7 @@ export class RegistroPagoComponent implements OnInit {
         this.loading = true;
         this.nuevoPago.cliente_id = this.cliente.id;
         this.nuevoPago.cartera_id = this.cartera_id;
-        this.nuevoPago.fecha = this.formatDate(new Date(this.today));
+        this.nuevoPago.fecha = this.today;
         setTimeout(() => {
             this.carteraService
                 .postPagos(this.nuevoPago)

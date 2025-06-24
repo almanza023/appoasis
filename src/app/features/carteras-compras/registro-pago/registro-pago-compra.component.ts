@@ -91,7 +91,7 @@ export class RegistroPagoCompraComponent implements OnInit {
     }
 
     crearPago() {
-        console.log(this.nuevoPago);
+
         if(this.today == undefined || this.today == ''){
             this.messageService.add({
                 severity: 'warn',
@@ -122,7 +122,7 @@ export class RegistroPagoCompraComponent implements OnInit {
         this.loading = true;
         this.nuevoPago.proveedor_id = this.proveedor.id;
         this.nuevoPago.cartera_compra_id = this.cartera_id;
-        this.nuevoPago.fecha = this.formatDate(new Date(this.today));
+        this.nuevoPago.fecha = this.today;
         setTimeout(() => {
             this.carteraService
                 .postPagos(this.nuevoPago)

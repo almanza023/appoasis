@@ -45,6 +45,7 @@ import { RegistrarClienteComponent } from './registrar-cliente/registrar-cliente
 import { BuscarClienteComponent } from './buscar-cliente/buscar-cliente.component';
 import { SelectorFormaVentaComponent } from './selector-forma-venta/selector-forma-venta.component';
 import { SelectorClienteComponent } from './selector-cliente/selector-cliente.component';
+import { TablaOperacionesComponent } from './tabla-operaciones/tabla-operaciones.component';
 
 @NgModule({
   declarations: [
@@ -65,7 +66,8 @@ import { SelectorClienteComponent } from './selector-cliente/selector-cliente.co
     RegistrarClienteComponent,
     BuscarClienteComponent,
     SelectorFormaVentaComponent,
-    SelectorClienteComponent
+    SelectorClienteComponent,
+    TablaOperacionesComponent
   ],
   imports: [
     CommonModule,
@@ -91,7 +93,7 @@ import { SelectorClienteComponent } from './selector-cliente/selector-cliente.co
     RegistrarClienteComponent,
     BuscarClienteComponent,
     SelectorFormaVentaComponent,
-    SelectorClienteComponent
+    SelectorClienteComponent,TablaOperacionesComponent
   ]
 })
 export class ComponentModule { }
