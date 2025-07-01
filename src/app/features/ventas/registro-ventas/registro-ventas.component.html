@@ -163,12 +163,8 @@
                     </tr>
                 </ng-template>
                 <ng-template pTemplate="body" let-producto>
-                    <tr [ngStyle]="{'background-color': producto.etiqueta_vencimiento === 'Verde' ? '#abebc6' : producto.etiqueta_vencimiento === 'Rojo' ? '#ffccb3' : producto.etiqueta_vencimiento === 'Amarillo' ? '#ffe0b2' : 'transparent'}">
-                        <td class="col-40"><h4><b>{{ producto.nombre }}</b></h4>
-                            <br>
-                            <b>{{ producto.codigo  }}</b><br>
-                            <b>{{ producto.fecha_vencimiento | date:'dd/MM/yyyy'  }}</b>
-                            <br>
+                    <tr >
+                        <td class="col-40"><h4><b>{{ producto.descripcion }}</b></h4>
                             <b><h5>{{ producto.precio | currency }}</h5></b>
                         </td>
                         <td class="col-15">
@@ -176,7 +172,7 @@
 
                         </td>
                         <td>
-                            <p-inputNumber class="w-full" [(ngModel)]="descuento" [ngModelOptions]="{ standalone: true }" [min]="0" [showButtons]="false" (change)="producto.descuento = producto.descuento || 0"></p-inputNumber>
+                            <p-inputNumber class="w-full" [(ngModel)]="producto.descuento" [ngModelOptions]="{ standalone: true }" [min]="0" [showButtons]="false" (change)="producto.descuento = producto.descuento || 0"></p-inputNumber>
                         </td>
 
                         <td>

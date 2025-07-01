@@ -112,9 +112,10 @@ export class ProductosComponent {
                     this.messageService.add({
                         severity: 'warn',
                         summary: 'Advertencia',
-                        detail: error.error.data,
+                        detail: "No se encontrarón registros",
                         life: 3000,
                     });
+                    this.loading = false;
                 }
             );
         }, 2000);
@@ -713,11 +714,10 @@ export class ProductosComponent {
                     return {
                         nombre: row[0],
                         presentacion: row[1],
-                        laboratorio: row[2],
-                        lote: row[3],
-                        fechaVencimiento: this.formatExcelDate(row[4]),
-                        precioVenta: row[5],
-                        cantidad: row[6],
+                        laboratorio: row[2] && row[2].toString().trim() !== '' ? row[2] : 'OTRO',
+                        precioVenta: row[3],
+                        precioCompra: row[4],
+                        cantidad: row[5],
                     };
                 });
 

@@ -22,7 +22,7 @@ export class CarterasComponent {
     item: any = {};
     response:any={};
     rowsPerPageOptions = [5, 10, 20];
-    nombreModulo: string = 'Módulo de Cartera';
+    nombreModulo: string = 'Módulo de Cuentas por Cobrar';
 
     cliente_id:number=0;
     filtroEstado:number=0;

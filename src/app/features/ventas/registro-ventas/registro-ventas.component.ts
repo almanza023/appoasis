@@ -156,6 +156,7 @@ export class RegistroVentasComponent implements OnInit {
                 cantidad: cantidad, // Usar la cantidad recibida desde la vista
                 precio: producto.precio,
             };
+            //console.log(detalle);
             this.crearDetalle(detalle);
             this.descuento = '';
             this.dt.filterGlobal('', 'contains');

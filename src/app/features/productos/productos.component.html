@@ -129,9 +129,9 @@
                             Stock General
                             <p-sortIcon field="stock_actual"></p-sortIcon>
                         </th>
-                        <th pSortableColumn="fecha_vencimiento">
-                            Fecha Vencimiento
-                            <p-sortIcon field="fecha_vencimiento"></p-sortIcon>
+                       <th pSortableColumn="precio_compra">
+                            Precio Costo
+                            <p-sortIcon field="precio_compra"></p-sortIcon>
                         </th>
                         <th pSortableColumn="estado">
                             Estado
@@ -141,8 +141,10 @@
                     </tr>
                 </ng-template>
                 <ng-template pTemplate="body" let-item>
-                    <tr [ngStyle]="{'background-color': item.etiqueta_vencimiento === 'Verde' ? '#abebc6' : item.etiqueta_vencimiento === 'Rojo' ? '#ffccb3' : item.etiqueta_vencimiento === 'Amarillo' ? '#ffe0b2' : 'transparent'}">
-                        <td style="width: 32%; min-width: 10rem">
+                    <!-- <tr [ngStyle]="{'background-color': item.etiqueta_vencimiento === 'Verde' ? '#abebc6' : item.etiqueta_vencimiento === 'Rojo' ? '#ffccb3' : item.etiqueta_vencimiento === 'Amarillo' ? '#ffe0b2' : 'transparent'}"> -->
+                   <tr>
+
+                       <td style="width: 32%; min-width: 10rem">
                             <span class="p-column-title">Código</span>
                             {{ item.id }}
                         </td>
@@ -167,18 +169,18 @@
                             <span class="p-column-title">Stock Actual</span>
                             {{ item.stock_actual }}
                         </td>
-                        <!-- <td style="width: 32%; min-width: 10rem" *ngIf="rol=='1'">
+                        <td style="width: 32%; min-width: 10rem" *ngIf="rol=='1'">
                             <span class="p-column-title">Precio Compra</span>
                             {{ item.precio_compra  | currency }}
                         </td>
-                        <td style="width: 32%; min-width: 10rem" *ngIf="rol=='1'">
+                        <!-- <td style="width: 32%; min-width: 10rem" *ngIf="rol=='1'">
                             <span class="p-column-title">Ganancia</span>
                             {{ item.ganancia  | currency }}
                         </td> -->
-                        <td style="width: 32%; min-width: 10rem">
+                        <!-- <td style="width: 32%; min-width: 10rem">
                             <span class="p-column-title">Fecha Vencimiento</span>
                             {{ item.fecha_vencimiento | date:'dd/MM/yyyy' }}
-                        </td>
+                        </td> -->
 
                         <td style="width: 26%; min-width: 10rem">
                             <span class="p-column-title">Estado</span>
