@@ -1,4 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ConfirmationService, ConfirmEventType, MessageService } from 'primeng/api';
 import { Table } from 'primeng/table';
@@ -35,6 +36,9 @@ export class RegistroComprasComponent implements OnInit {
     pendientes:any=[];
     loading:boolean=false;
 
+    productoDialog:boolean = false; // Variable para controlar la visibilidad del diálogo de productos
+    productoForm: FormGroup; // Formulario reactivo para el producto
+
 
     constructor(
         private productoService: ProductosService,
@@ -42,7 +46,8 @@ export class RegistroComprasComponent implements OnInit {
         private messageService: MessageService,
         private router: Router,
         private route: ActivatedRoute,
-        private confirmationService: ConfirmationService
+        private confirmationService: ConfirmationService,
+        private fb: FormBuilder
     ) {}
 
     @ViewChild(SelectorProveedorComponent) proveedorComponent: SelectorProveedorComponent;
@@ -54,6 +59,21 @@ export class RegistroComprasComponent implements OnInit {
         this.compra_id = this.route.snapshot.paramMap.get('id');
         this.today = this.formatDate(new Date());
         this.getProductos();
+        this.productoForm = this.fb.group({
+                    categoria_id: ['1', Validators.required],
+                    proveedor_id: ['1', Validators.required],
+                    ubicacion_id: ['40', Validators.required],
+                    user_id: ['', Validators.required],
+                    nombre: ['', [Validators.required]],
+                    codigo: [''],
+                    descripcion: [''],
+                    laboratorio: ['OTRO'],
+                    lote: [''],
+                    fecha_vencimiento: [''],
+                    precio: ['0'],
+                    precio_compra: ['0'],
+                    stock_actual: ['', [Validators.required]],
+                });
         if(this.compra_id=='0'){
             this.compra_id="";
         }else{
@@ -61,6 +81,8 @@ export class RegistroComprasComponent implements OnInit {
                 this.getCompra(this.compra_id);
             }, 1500);
         }
+
+
 
     }
 
@@ -405,6 +427,65 @@ crearNuevaCompra(){
             this.router.navigate(['compras/registro/0']);
         });
 
-        }
+}
+
+ copiarTexto() {
+        let nombre = this.productoForm.get('nombre')?.value;
+        this.productoForm.get('descripcion')?.setValue(nombre);
+    }
+
+    saveProduct() {
+        this.productoForm.get('user_id').setValue(localStorage.getItem('user_id'));
+        this.productoForm.get('lote').setValue(1);
+        this.productoForm.get('laboratorio').setValue('OTROS');
+        this.productoForm.get('ubicacion_id').setValue('40');
+        this.productoForm.get('categoria_id').setValue('1');
+        this.productoForm.get('proveedor_id').setValue('1');
+
+        // Validate that price is greater than purchase price
+        const precio = Number(this.productoForm.get('precio')?.value);
+        const precioCompra = Number(
+            this.productoForm.get('precio_compra')?.value
+        );
+        console.log(this.productoForm.value);
+        this.productoService
+            .postData(this.productoForm.value)
+            .pipe(finalize(() => this.getProductos()))
+            .subscribe(
+                (response) => {
+                    let severity = '';
+                    let summary = '';
+                    if (response.isSuccess == true) {
+                        severity = 'success';
+                        summary = 'Exitoso';
+                    } else {
+                        severity = 'warn';
+                        summary = 'Advertencia';
+                    }
+                    this.messageService.add({
+                        severity: severity,
+                        summary: summary,
+                        detail: response.message,
+                        life: 3000,
+                    });
+                },
+                (error) => {
+                    this.messageService.add({
+                        severity: 'error',
+                        summary: 'Advertencia',
+                        detail: 'Error al enviar datos',
+                        life: 3000,
+                    });
+                }
+            );
+            this.productoForm.reset();
+            this.productoDialog= false; // Cerrar el diálogo de productos después de guardar
+
+
+
+    }
+
 
 }
+
+

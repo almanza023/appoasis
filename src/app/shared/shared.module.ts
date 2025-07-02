@@ -24,6 +24,7 @@ import { DialogModule } from 'primeng/dialog';
 import { TabViewModule } from 'primeng/tabview';
 import { ToggleButtonModule } from 'primeng/togglebutton';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { SplitButtonModule } from 'primeng/splitbutton';
 
 @NgModule({
 
@@ -39,7 +40,7 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
     MegaMenuModule,
     MenubarModule, TableModule, ButtonModule, ToastModule, ToolbarModule,
     InputTextareaModule, DropdownModule,  InputNumberModule, DialogModule,
-    TabViewModule,ToggleButtonModule, ConfirmDialogModule
+    TabViewModule,ToggleButtonModule, ConfirmDialogModule,SplitButtonModule
   ],
   exports: [
     FormsModule,
@@ -55,7 +56,7 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
     MegaMenuModule,
     MenubarModule, TableModule, ButtonModule, ToastModule, ToolbarModule,
     InputTextareaModule, DropdownModule,  InputNumberModule, DialogModule,
-    TabViewModule,ToggleButtonModule, ConfirmDialogModule
+    TabViewModule,ToggleButtonModule, ConfirmDialogModule, SplitButtonModule
 
   ],
   declarations: [

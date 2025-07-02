@@ -396,19 +396,19 @@ export class RegistroVentasComponent implements OnInit {
                 return;
             }
 
-            if (
-                (this.tipopago.id === 1 &&
-                    this.venta.dineroRecibido === undefined) ||
-                this.venta.dineroRecibido === 0
-            ) {
-                this.messageService.add({
-                    severity: 'warn',
-                    summary: 'Dinero Recibido',
-                    detail: 'Debe ingresar el dinero recibido',
-                    life: 3000,
-                });
-                return;
-            }
+            // if (
+            //     (this.tipopago.id === 1 &&
+            //         this.venta.dineroRecibido === undefined) ||
+            //     this.venta.dineroRecibido === 0
+            // ) {
+            //     this.messageService.add({
+            //         severity: 'warn',
+            //         summary: 'Dinero Recibido',
+            //         detail: 'Debe ingresar el dinero recibido',
+            //         life: 3000,
+            //     });
+            //     return;
+            // }
 
         }
         this.loading=true;

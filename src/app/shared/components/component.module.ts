@@ -46,6 +46,8 @@ import { BuscarClienteComponent } from './buscar-cliente/buscar-cliente.componen
 import { SelectorFormaVentaComponent } from './selector-forma-venta/selector-forma-venta.component';
 import { SelectorClienteComponent } from './selector-cliente/selector-cliente.component';
 import { TablaOperacionesComponent } from './tabla-operaciones/tabla-operaciones.component';
+import { SplitButtonModule } from 'primeng/splitbutton';
+
 
 @NgModule({
   declarations: [
@@ -76,7 +78,7 @@ import { TablaOperacionesComponent } from './tabla-operaciones/tabla-operaciones
     CalendarModule, TableModule,KeyFilterModule,
     ToastModule, RatingModule, MultiSelectModule, SelectButtonModule,
     InputMaskModule, InputNumberModule, InputTextModule, AccordionModule, FileUploadModule,AutoCompleteModule,
-    DialogModule, TabViewModule, ToolbarModule, InputTextareaModule, CheckboxModule, ConfirmDialogModule
+    DialogModule, TabViewModule, ToolbarModule, InputTextareaModule, CheckboxModule, ConfirmDialogModule, SplitButtonModule
   ],
   exports: [
     SelectorCategoriaComponent,
@@ -93,7 +95,7 @@ import { TablaOperacionesComponent } from './tabla-operaciones/tabla-operaciones
     RegistrarClienteComponent,
     BuscarClienteComponent,
     SelectorFormaVentaComponent,
-    SelectorClienteComponent,TablaOperacionesComponent
+    SelectorClienteComponent,TablaOperacionesComponent,SplitButtonModule
   ]
 })
 export class ComponentModule { }

@@ -8,6 +8,7 @@ import { MessageService } from 'primeng/api';
 import {  AperturaCajaService } from 'src/app/core/services/apertura-caja.service';
 import { AperturaCaja } from 'src/app/core/interface/AperturaCaja';
 import { SelectorBodegaComponent } from 'src/app/shared/components/selector-bodega/selector-bodega.component';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -39,7 +40,9 @@ export class AperturaCajaComponent {
 
     constructor(
         private service: AperturaCajaService,
-        private messageService: MessageService
+        private messageService: MessageService,
+        private router: Router,
+
     ) {}
 
 
@@ -170,7 +173,7 @@ export class AperturaCajaComponent {
         if (this.caja.id == undefined) {
             this.crear(this.objectModel);
         } else {
-            this.actualizar(this.caja.id, this.objectModel);
+            this.actualizarMonto(this.caja);
         }
         //this.clientes = [...this.clientes];
         this.clienteDialog = false;
@@ -191,6 +194,7 @@ export class AperturaCajaComponent {
                     if (response.isSuccess == true) {
                         severity = 'success';
                         summary = 'Exitoso';
+                        localStorage.setItem('caja_id', response.data.id);
                     } else {
                         severity = 'warn';
                         summary = 'Advertencia';
@@ -246,6 +250,39 @@ export class AperturaCajaComponent {
             );
     }
 
+    actualizarMonto(item:any) {
+        this.service
+            .actualizarCaja(item)
+            .pipe(finalize(() => this.getDataAll()))
+            .subscribe(
+                (response) => {
+                    let severity = '';
+                    let summary = '';
+                    if (response.isSuccess == true) {
+                        severity = 'success';
+                        summary = 'Exitoso';
+                    } else {
+                        severity = 'warn';
+                        summary = 'Advertencia';
+                    }
+                    this.messageService.add({
+                        severity: severity,
+                        summary: summary,
+                        detail: response.message,
+                        life: 3000,
+                    });
+                },
+                (error) => {
+                    this.messageService.add({
+                        severity: 'warn',
+                        summary: 'Advertencia',
+                        detail: error.error.data,
+                        life: 3000,
+                    });
+                }
+            );
+    }
+
     onGlobalFilter(table: Table, event: Event) {
         table.filterGlobal(
             (event.target as HTMLInputElement).value,
@@ -266,4 +303,13 @@ export class AperturaCajaComponent {
         }
         return model
     }
+
+    verMovimiento(caja_id:any){
+        this.router
+            .navigateByUrl('/', { skipLocationChange: true })
+            .then(() => {
+                this.router.navigate(['reportes/dia/' + caja_id]);
+            });
+    }
+
 }

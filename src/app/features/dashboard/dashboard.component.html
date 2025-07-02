@@ -17,6 +17,34 @@
             </div>
         </div>
     </div>
+      <div class="col-12 md:col-6 xl:col-3" *ngIf="rol == '1' || rol == '2'">
+        <div class="card mb-0">
+            <div class="flex justify-content-between mb-3">
+                <div>
+                    <span class="block text-500 font-medium mb-3"
+                        >Total Ventas Efectivo</span
+                    >
+                    <div class="text-900 font-medium text-xl">
+                        {{ detalle.efectivo | currency }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 md:col-6 xl:col-3" *ngIf="rol == '1' || rol == '2'">
+        <div class="card mb-0">
+            <div class="flex justify-content-between mb-3">
+                <div>
+                    <span class="block text-500 font-medium mb-3"
+                        >Total Ventas Crédito</span
+                    >
+                    <div class="text-900 font-medium text-xl">
+                        {{ detalle.credito | currency }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div class="col-12 md:col-6 xl:col-6">
         <div class="card">

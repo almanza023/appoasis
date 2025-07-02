@@ -1,3 +1,28 @@
+<div class="flex flex-column md:flex-row md:align-items-center mb-3 gap-2">
+    <input
+        type="date"
+        [(ngModel)]="fechaFiltro"
+        class="p-inputtext p-component"
+        placeholder="Selecciona una fecha"
+        name="fechaFiltro"
+    />
+    <button
+        pButton
+        type="button"
+        label="Consultar"
+        (click)="consultarPorFecha()"
+        class="p-button-primary"
+    ></button>
+    <button
+        pButton
+        type="button"
+        label="Exportar Excel"
+        icon="pi pi-file-excel"
+        class="p-button-success"
+        (click)="exportarExcel()"
+    ></button>
+</div>
+
 <p-table #dt
     [value]="operaciones"
     [rowHover]="true"
@@ -7,7 +32,7 @@
         <div
             class="flex flex-column md:flex-row md:justify-content-between md:align-items-center"
         >
-            <h5 class="m-0">Información General</h5>
+            <h5 class="m-0">Operaciones</h5>
             <span class="block mt-2 md:mt-0 p-input-icon-left">
                 <i class="pi pi-search"></i>
                 <input

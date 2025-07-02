@@ -77,20 +77,12 @@
                             <p-sortIcon field="fecha_cierre"></p-sortIcon>
                         </th>
                         <th pSortableColumn="monto_inicial">
-                            Base
+                            Monto Inicial
                             <p-sortIcon field="monto_inicial"></p-sortIcon>
                         </th>
-                        <th pSortableColumn="totalventas">
-                            Total Ventas
-                            <p-sortIcon field="totalventas"></p-sortIcon>
-                        </th>
-                        <th pSortableColumn="totalgastos">
-                            Total Gastos
-                            <p-sortIcon field="totalgastos"></p-sortIcon>
-                        </th>
-                        <th pSortableColumn="utilidad">
-                            Utilidad
-                            <p-sortIcon field="utilidad"></p-sortIcon>
+                        <th pSortableColumn="monto_final">
+                            Monto Final
+                            <p-sortIcon field="monto_final"></p-sortIcon>
                         </th>
                         <th pSortableColumn="estado">
                             Estado
@@ -117,17 +109,10 @@
                             <span class="p-column-title">Base</span>
                             {{ item.monto_inicial | currency }}
                         </td>
+
                         <td style="width: 32%; min-width: 10rem">
-                            <span class="p-column-title">Total Ventas</span>
-                            {{ item.totalventas | currency  }}
-                        </td>
-                        <td style="width: 32%; min-width: 10rem">
-                            <span class="p-column-title">Total Gastos</span>
-                            {{ item.totalgastos | currency }}
-                        </td>
-                        <td style="width: 32%; min-width: 10rem">
-                            <span class="p-column-title">Utilidad</span>
-                            {{ item.utilidad | currency }}
+                            <span class="p-column-title">Monto Final</span>
+                            {{ item.monto_final | currency }}
                         </td>
 
                         <td style="width: 26%; min-width: 10rem">
@@ -136,6 +121,17 @@
                         </td>
                         <td>
                             <div class="flex">
+                                <p-button
+                                    *ngIf="item.estado==1"
+                                    (click)="edit(item)"
+                                    icon="pi pi-pencil"
+                                    styleClass="p-button-rounded p-button-info">
+                                </p-button>
+                                <p-button
+                                    (click)="verMovimiento(item.id)"
+                                    icon="pi pi-eye"
+                                    styleClass="p-button-rounded p-button-success">
+                                </p-button>
                                 <p-button *ngIf="item.estado==1"
                                     (click)="bloqueoCliente(item)"
                                     icon="pi pi-check"

@@ -9,7 +9,7 @@ import { ReporteCajaMenorComponent } from './reporte-caja-menor/reporte-caja-men
 
 @NgModule({
     imports: [RouterModule.forChild([
-        { path: 'dia', component: ReporteDiaComponent },
+        { path: 'dia/:id', component: ReporteDiaComponent },
         { path: 'historicos', component: ReporteDiaHistoricosComponent },
         { path: 'caja-menor', component: ReporteCajaMenorComponent },
     ])],

@@ -85,6 +85,13 @@ export class AperturaCajaService {
     return this.http.post<any>(url, item, {headers});
   }
 
+  actualizarCaja(item:any): Observable<any> {
+    const headers = { 'Authorization': 'Bearer '+localStorage.getItem('token') }
+    let url=`${environment.baseURL}/apertura-caja-update`;
+    return this.http.post<any>(url, item, {headers});
+  }
+
+
 
 
 

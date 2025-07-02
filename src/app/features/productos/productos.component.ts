@@ -67,8 +67,8 @@ export class ProductosComponent {
         this.cols = [];
         this.statuses = [];
         this.productoForm = this.fb.group({
-            categoria_id: ['', Validators.required],
-            proveedor_id: ['', Validators.required],
+            categoria_id: ['1', Validators.required],
+            proveedor_id: ['1', Validators.required],
             ubicacion_id: ['40', Validators.required],
             user_id: ['', Validators.required],
             nombre: ['', [Validators.required]],
@@ -80,7 +80,7 @@ export class ProductosComponent {
             precio: ['0'],
             precio_compra: ['0'],
             stock_actual: ['', [Validators.required]],
-            detalles: this.fb.array([], Validators.required),
+            //detalles: this.fb.array([], Validators.required),
         });
 
         this.trasladoForm = this.fb.group({
@@ -269,6 +269,8 @@ export class ProductosComponent {
         this.productoForm.get('lote').setValue(1);
         this.productoForm.get('laboratorio').setValue('OTROS');
         this.productoForm.get('ubicacion_id').setValue('40');
+        this.productoForm.get('categoria_id').setValue('1');
+        this.productoForm.get('proveedor_id').setValue('1');
 
         // Validate that price is greater than purchase price
         const precio = Number(this.productoForm.get('precio')?.value);
@@ -441,9 +443,9 @@ export class ProductosComponent {
     }
 
     reiniciarFormulario() {
-        this.categoriaComponent.reiniciarComponente();
+        //this.categoriaComponent.reiniciarComponente();
         //this.ubicacionComponent.reiniciarComponente();
-        this.proveedorComponent.reiniciarComponente();
+        //this.proveedorComponent.reiniciarComponente();
         this.productoForm.reset();
         this.productoForm.get('precio_compra')?.setValue(0);
     }

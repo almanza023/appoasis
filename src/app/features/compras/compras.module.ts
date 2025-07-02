@@ -5,6 +5,7 @@ import { ComponentModule } from 'src/app/shared/components/component.module';
 import { ComprasComponent } from './compras.component';
 import { RegistroComprasComponent } from './registro-compras/registro-compras.component';
 import { ComprasRoutingModule } from './compras-routing.module';
+import { ReactiveFormsModule } from '@angular/forms';
 
 
 @NgModule({
@@ -15,7 +16,8 @@ import { ComprasRoutingModule } from './compras-routing.module';
   imports: [
     CommonModule,
     ComponentModule,
-    ComprasRoutingModule
+    ComprasRoutingModule,
+    ReactiveFormsModule
   ]
 })
 export class ComprasModule { }

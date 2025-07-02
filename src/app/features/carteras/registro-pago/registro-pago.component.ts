@@ -30,6 +30,7 @@ export class RegistroPagoComponent implements OnInit {
     cliente: Cliente = {};
     today:string='';
     visible:boolean=false;
+    caja_id: string = '';
     constructor(
         private carteraService: CarteraService,
         private messageService: MessageService,
@@ -40,6 +41,7 @@ export class RegistroPagoComponent implements OnInit {
     @ViewChild(SelectorTiPoPagoComponent) selectorTipoPago: SelectorTiPoPagoComponent;
 
     ngOnInit() {
+        this.caja_id = localStorage.getItem('caja_id') || '';
         this.today=this.formatDate(new Date());
         this.id = this.route.snapshot.paramMap.get('id');
         this.cartera_id = this.route.snapshot.paramMap.get('id');
@@ -125,6 +127,8 @@ export class RegistroPagoComponent implements OnInit {
         this.loading = true;
         this.nuevoPago.cliente_id = this.cliente.id;
         this.nuevoPago.cartera_id = this.cartera_id;
+        this.nuevoPago.caja_id = this.caja_id;
+
         this.nuevoPago.fecha = this.today;
         setTimeout(() => {
             this.carteraService

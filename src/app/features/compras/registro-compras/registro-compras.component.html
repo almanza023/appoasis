@@ -2,35 +2,37 @@
 <app-loading *ngIf="loading"></app-loading>
 <div class="p-fluid">
     <div class="card">
-        <div class="field">
-            <label for="fecha">N° Compra</label>
-            <h3><b>{{compra_id}}</b></h3>
-            <p-button label="Actualizar" icon="pi pi-refresh" (click)="actualizarPedido()" styleClass="p-button-warning"></p-button>
-        </div>
-        <div class="field">
-            <label for="fecha">Fecha</label>
-            <p-calendar id="fecha" [(ngModel)]="today" [showIcon]="true" dateFormat="yy-mm-dd" [disabled]="compra_id !== ''"></p-calendar>
-        </div>
-
-        <div class="field">
-            <label for="mesa">Seleccionar Proveedor</label>
-            <app-selector-proveedor (itemSeleccionado)="compra.proveedor_id = $event.id" [disabled]="compra_id !== ''"></app-selector-proveedor>
-        </div>
-
-        <div class="field">
-            <label for="cliente">Forma de Pago</label>
-            <app-selector-forma-venta (itemSeleccionado)="compra.forma_pago = $event.id" [disabled]="compra_id !== ''"></app-selector-forma-venta>
-        </div>
-
-        <div class="field">
-            <label for="mesa">Seleccionar Bodega</label>
-            <app-selector-bodega (itemSeleccionado)="compra.bodega_id = $event.id" [disabled]="compra_id !== ''"></app-selector-bodega>
-        </div>
-
-        <div class="field" *ngIf="infoPedido.compra?.estado == 1 || compra_id ==''">
-            <p-button label="Seleccionar Productos" icon="pi pi-list" (click)="mostrarDialogoProductos()"></p-button>
+        <div class="grid">
+            <!-- Compra Info -->
+            <div class="col-12 md:col-3">
+                <label for="fecha">N° Compra</label>
+                <h3><b>{{compra_id}}</b></h3>
+                <p-button label="Actualizar" icon="pi pi-refresh" (click)="actualizarPedido()" styleClass="p-button-warning p-button-sm"></p-button>
+            </div>
+            <div class="col-12 md:col-3">
+                <label for="fecha">Fecha</label>
+                <p-calendar id="fecha" [(ngModel)]="today" [showIcon]="true" dateFormat="yy-mm-dd" [disabled]="compra_id !== ''"></p-calendar>
+            </div>
+            <div class="col-12 md:col-3">
+                <label for="mesa">Proveedor</label>
+                <app-selector-proveedor (itemSeleccionado)="compra.proveedor_id = $event.id" [disabled]="compra_id !== ''"></app-selector-proveedor>
+            </div>
+            <div class="col-12 md:col-3">
+                <label for="cliente">Forma de Pago</label>
+                <app-selector-forma-venta (itemSeleccionado)="compra.forma_pago = $event.id" [disabled]="compra_id !== ''"></app-selector-forma-venta>
+            </div>
+            <div class="col-12 md:col-3">
+                <label for="mesa">Bodega</label>
+                <app-selector-bodega (itemSeleccionado)="compra.bodega_id = $event.id" [disabled]="compra_id !== ''"></app-selector-bodega>
+            </div>
         </div>
 
+        <!-- Acciones de Productos -->
+        <div class="flex flex-wrap gap-2 mt-3 mb-3">
+            <p-button label="Seleccionar Productos" icon="pi pi-list" (click)="mostrarDialogoProductos()" *ngIf="infoPedido.compra?.estado == 1 || compra_id ==''"></p-button>
+        </div>
+
+        <!-- Tabla de Detalles -->
         <p-table [value]="detalles" [paginator]="true" [rows]="10" dataKey="id" responsiveLayout="scroll">
             <ng-template pTemplate="header">
                 <tr>
@@ -43,7 +45,7 @@
                 </tr>
             </ng-template>
             <ng-template pTemplate="body" let-detalle>
-                <tr >
+                <tr>
                     <td>{{ detalle.producto.nombre }}</td>
                     <td>{{ detalle.total_cantidad }}</td>
                     <td>{{ detalle.precio | currency }}</td>
@@ -56,32 +58,28 @@
             </ng-template>
         </p-table>
 
-        <div class="field">
+        <!-- Totales -->
+        <div class="field mt-3">
             <h3>Total Compra: {{ calcularTotal() | currency }}</h3>
             <h3>Cantidad Productos: {{ totalcantidad }}</h3>
         </div>
 
-        <div class="field" *ngIf="compra.estado==1">
-            <p-button label="Finalizar Compra" icon="pi pi-check" styleClass="p-button-success" (click)="confirm1()"></p-button>
+        <!-- Finalizar y Nueva Compra -->
+        <div class="flex flex-wrap gap-2 mt-3">
+            <p-button label="Finalizar Compra" icon="pi pi-check" styleClass="p-button-success" (click)="confirm1()" *ngIf="compra.estado==1"></p-button>
+            <p-button label="Nueva Compra" icon="pi pi-plus" styleClass="p-button-primary p-button-sm" (click)="crearNuevaCompra()"></p-button>
         </div>
-
-<div class="field grid mt-3">
-    <div class="col-12 flex justify-content-end">
-        <p-button label="Nueva Compra" icon="pi pi-plus" styleClass="p-button-primary p-button-sm" (click)="crearNuevaCompra()"></p-button>
-    </div>
-</div>
-
-
     </div>
 </div>
 
 <p-dialog header="Seleccionar Productos" [(visible)]="displayDialog" [modal]="true" [responsive]="true" [style]="{'width': '90vw'}">
     <div class="grid">
         <div class="col-12">
-            <p-table #dt [value]="productos" [rows]="10"
+            <p-button label="Crear Producto" icon="pi pi-plus" styleClass="p-button-success" (click)="productoDialog=true"></p-button>
+            <p-table #dt [value]="productos" [rows]="20"
                 [globalFilterFields]="['nombre', 'precio', 'descripcion']"
                 [paginator]="true"
-                [rowsPerPageOptions]="[10, 20, 30]" dataKey="id"
+                [rowsPerPageOptions]="[20, 40, 60, productos?.length]" dataKey="id"
                 responsiveLayout="scroll">
 
                 <ng-template pTemplate="caption">
@@ -112,7 +110,7 @@
                 </ng-template>
                 <ng-template pTemplate="body" let-producto>
                     <tr>
-                        <td>{{ producto.nombre }}</td>
+                        <td style="min-width: 250px;">{{ producto.nombre }}</td>
                         <td>{{ producto.stock_actual }}</td>
                         <td>
                             <input pInputText type="number" [(ngModel)]="producto.precio" [ngModelOptions]="{ standalone: true }" min="1" [value]="1" />
@@ -133,6 +131,45 @@
     </div>
 </p-dialog>
 
+<p-dialog [(visible)]="productoDialog" [style]="{ width: '1100px' }" [modal]="true" header class="p-fluid">
+    <div class="card p-fluid">
+        <h3>Datos Básicos del Producto</h3>
+        <form [formGroup]="productoForm" (ngSubmit)="saveProduct()">
+            <div class="grid">
+                <div class="col-12 md:col-4">
+                    <label htmlFor="nombre" class="font-bold mb-2">Nombre</label>
+                    <input type="text" pInputText formControlName="nombre" (input)="copiarTexto()">
+                    <small *ngIf="productoForm.get('nombre').invalid && productoForm.get('nombre').touched" class="p-error">El nombre es obligatorio</small>
+                </div>
+
+                <div class="col-12 md:col-8">
+                    <label htmlFor="descripcion" class="font-bold mb-2">Descripción</label>
+                    <textarea pInputTextarea formControlName="descripcion" rows="3" required></textarea>
+                </div>
+
+                <div class="col-12 md:col-4" >
+                    <label htmlFor="laboratorio" class="font-bold mb-2">Laboratorio</label>
+                    <input type="text" pInputText formControlName="laboratorio" required>
+                </div>
+
+                <div class="col-12 md:col-4" >
+                    <label htmlFor="stockActual" class="font-bold mb-2">Stock Actual</label>
+                    <input type="number" pInputText formControlName="stock_actual" required >
+                    <small *ngIf="productoForm.get('stock_actual').invalid && productoForm.get('stock_actual').touched" class="p-error">Ingrese un stock válido</small>
+                </div>
+                <div class="col-12 md:col-4">
+                    <label htmlFor="precio" class="font-bold mb-2">Precio Venta</label>
+                    <p-inputNumber formControlName="precio" mode="decimal" ></p-inputNumber>
+                    <small *ngIf="productoForm.get('precio').invalid && productoForm.get('precio').touched" class="p-error">Ingrese un precio válido</small>
+                </div>
+            </div>
+        </form>
+    </div>
+    <ng-template pTemplate="footer">
+        <button pButton pRipple label="Guardar" icon="pi pi-check" class="p-button-success mr-2" (click)="saveProduct()"></button>
+        <button pButton pRipple label="Cancelar" icon="pi pi-times" class="p-button-danger" (click)="productoDialog=false"></button>
+    </ng-template>
+</p-dialog>
 
 
 <p-confirmDialog [style]="{width: '90%', maxWidth: '50vw'}"></p-confirmDialog>

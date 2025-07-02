@@ -45,8 +45,8 @@ export class DashboardComponent implements OnInit {
 
     ngOnInit() {
         this.getDataAll();
-        this.buscarProductosProximosAVencer();
-        this.getProductosInventario();
+        //this.buscarProductosProximosAVencer();
+        //this.getProductosInventario();
 
     }
 
@@ -90,6 +90,7 @@ export class DashboardComponent implements OnInit {
         .subscribe(
             (response) => {
                 this.detalle = response.data;
+                localStorage.setItem('caja_id', response.data.caja_id);
                 this.totalPedidosPendientes=response.data.totalPedidos;
                 this.totalVentasDia=response.data.totalVentas;
                 this.totalPedidosEntregados=response.data.totalPedidosCerrados;

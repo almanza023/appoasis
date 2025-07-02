@@ -26,38 +26,27 @@
                     ></p-button>
                 </div>
 <div class="col-12 md:col-2">
-    <p-button
-        label="Descargar Plantilla"
-        styleClass="p-button-primary"
-        icon="pi pi-download"
-        (click)="descargarPlantilla()"
-    ></p-button>
-</div>
-<div class="col-12 md:col-2">
-    <p-button
-        label="Importar Excel"
-        styleClass="p-button-warning"
+    <p-splitButton
+        label="Importar"
         icon="pi pi-upload"
-        (click)="importarExcel()"
-    ></p-button>
+        [model]="[
+            {label: 'Descargar Plantilla', icon: 'pi pi-download', command: descargarPlantilla},
+            {label: 'Importar Excel', icon: 'pi pi-upload', command: importarExcel}
+        ]"
+        styleClass="p-button-primary"
+    ></p-splitButton>
 </div>
 
 <div class="col-12 md:col-2">
-    <p-button
-        label="Descargar Plantilla Ajuste"
-        styleClass="p-button-primary"
-        icon="pi pi-download"
-        (click)="exportarPlantillaAjuste()"
-    ></p-button>
-</div>
-
-<div class="col-12 md:col-2">
-    <p-button
-        label="Importar Excel Ajuste"
+    <p-splitButton
+        label="Ajuste"
+        icon="pi pi-cog"
+        [model]="[
+            {label: 'Descargar Plantilla Ajuste', icon: 'pi pi-download', command: exportarPlantillaAjuste},
+            {label: 'Importar Excel Ajuste', icon: 'pi pi-upload', command: importarAjusteExcel}
+        ]"
         styleClass="p-button-warning"
-        icon="pi pi-upload"
-        (click)="importarAjusteExcel()"
-    ></p-button>
+    ></p-splitButton>
 </div>
 
             </div>
@@ -388,16 +377,16 @@
         <h3>Datos Básicos del Producto</h3>
         <form [formGroup]="productoForm" (ngSubmit)="saveProduct()">
             <div class="grid">
-                <div class="col-12 md:col-4" *ngIf="!producto.editar">
+                <!-- <div class="col-12 md:col-4" *ngIf="!producto.editar">
                     <label htmlFor="categoria" class="font-bold mb-2">Categoría</label>
                     <app-selector-categoria (itemSeleccionado)="productoForm.get('categoria_id').setValue($event.id)" required></app-selector-categoria>
                     <small *ngIf="productoForm.get('categoria_id').invalid && (productoForm.get('categoria_id').dirty || productoForm.get('categoria_id').touched)" class="p-error">Seleccione una categoría</small>
-                </div>
-                <div class="col-12 md:col-4">
+                </div> -->
+                <!-- <div class="col-12 md:col-4">
                     <label htmlFor="proveedor" class="font-bold mb-2">Distribuidor</label>
                     <app-selector-proveedor (itemSeleccionado)="productoForm.get('proveedor_id').setValue($event.id)" required></app-selector-proveedor>
                     <small *ngIf="productoForm.get('proveedor_id').invalid && (productoForm.get('proveedor_id').dirty || productoForm.get('proveedor_id').touched)" class="p-error">Seleccione un proveedor</small>
-                </div>
+                </div> -->
                 <div class="col-12 md:col-4">
                     <label htmlFor="nombre" class="font-bold mb-2">Nombre</label>
                     <input type="text" pInputText formControlName="nombre" (input)="copiarTexto()">
@@ -413,23 +402,24 @@
                     <label htmlFor="descripcion" class="font-bold mb-2">Descripción</label>
                     <textarea pInputTextarea formControlName="descripcion" rows="3" required></textarea>
                 </div>
-                <div class="col-12 md:col-4">
+                <!-- <div class="col-12 md:col-4">
                     <label htmlFor="fechaVencimiento" class="font-bold mb-2">Fecha Vencimiento</label>
                     <input type="date" pInputText formControlName="fecha_vencimiento" required>
                     <small *ngIf="productoForm.get('fecha_vencimiento').invalid && (productoForm.get('fecha_vencimiento').dirty || productoForm.get('fecha_vencimiento').touched)" class="p-error">Seleccione una fecha</small>
-                </div>
+                </div> -->
                 <div class="col-12 md:col-4" *ngIf="!producto.editar">
                     <label htmlFor="laboratorio" class="font-bold mb-2">Laboratorio</label>
                     <input type="text" pInputText formControlName="laboratorio" required>
                     <!-- <small *ngIf="productoForm.get('laboratorio').invalid && productoForm.get('laboratorio').touched" class="p-error">El laboratorio es obligatorio</small> -->
                 </div>
-                <div class="col-12 md:col-4">
+                <!-- <div class="col-12 md:col-4">
                     <label htmlFor="lote" class="font-bold mb-2">N° Lote</label>
                     <input type="text" pInputText formControlName="lote" required value="1">
-                </div>
+                </div> -->
                 <div class="col-12 md:col-4" >
                     <label htmlFor="stockActual" class="font-bold mb-2">Stock Actual</label>
-                    <input type="number" pInputText formControlName="stock_actual" required (input)="agregarABodega()">
+                    <!-- <input type="number" pInputText formControlName="stock_actual" required (input)="agregarABodega()"> -->
+                    <input type="number" pInputText formControlName="stock_actual" required >
                     <small *ngIf="productoForm.get('stock_actual').invalid && productoForm.get('stock_actual').touched" class="p-error">Ingrese un stock válido</small>
                 </div>
                 <div class="col-12 md:col-4">
@@ -445,7 +435,7 @@
                 </div> -->
 
 
-            <div class="col-12" *ngIf="!producto.editar">
+            <!-- <div class="col-12" *ngIf="!producto.editar">
                 <h4>Asignar a Bodegas</h4>
                 <p-table [value]="bodegas" [columns]="['nombre', 'cantidad', 'acciones']">
                     <ng-template pTemplate="header">
@@ -468,7 +458,7 @@
                         </tr>
                     </ng-template>
                 </p-table>
-            </div>
+            </div> -->
 
             </div>
         </form>

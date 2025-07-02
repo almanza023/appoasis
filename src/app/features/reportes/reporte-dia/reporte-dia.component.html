@@ -1,6 +1,6 @@
 <p-toast></p-toast>
 <app-loading *ngIf="loading"></app-loading>
-<div class="grid">
+<div class="grid" class="picture">
 
     <div class="col-12 md:col-12" *ngIf="data && data.base_inicial">
         <div class="card">
@@ -16,8 +16,12 @@
                 <div class="col-6">
                     <p-table [value]="[
                         {concepto: 'Base Inicial', valor: data.base_inicial},
-                        {concepto: 'Total Ventas', valor: data.totalventas},
-                        {concepto: 'Total Gastos', valor: data.totalgastos},
+                        {concepto: 'Total Ventas Efectivo', valor: data.totalventascontado},
+                        {concepto: 'Total Gastos Efectivo', valor: data.totalgastos},
+                        {concepto: 'Total Compras Efectivo', valor: data.totalcomprascontado},
+                        {concepto: 'Total Abonos Cliente Efectivo', valor: data.totalabonosefectivo},
+                        {concepto: 'Total Abonos Proveedor Efectivo', valor: data.totalpagoscompraefectivo},
+
                         {concepto: 'Total Neto', valor: data.totalneto}
                     ]">
                         <ng-template pTemplate="header">
@@ -29,16 +33,31 @@
                         <ng-template pTemplate="body" let-item>
                             <tr>
                                 <td>{{item.concepto}}</td>
-                                <td>{{item.valor | currency}}</td>
+                                <td>
+                                    <ng-container *ngIf="item.concepto === 'Total Neto'; else normalValue">
+                                        <strong>{{item.valor | currency}}</strong>
+                                    </ng-container>
+                                    <ng-template #normalValue>
+                                        {{item.valor | currency}}
+                                    </ng-template>
+                                </td>
                             </tr>
                         </ng-template>
                     <ng-template pTemplate="footer">
                         <tr>
                             <td colspan="2" class="flex justify-content-between">
-                                <p-button label="Ver Historial de Ventas" icon="pi pi-file" (click)="verHistorialVentas()" styleClass="p-button-info"></p-button>
-                                <p-button label="Ver Historial de Gastos" icon="pi pi-file" (click)="verHistorialGastos()" styleClass="p-button-warning"></p-button>
-                                <!-- <app-ticket-cierre-caja [data]="dataReport"></app-ticket-cierre-caja> -->
-                                 <button pButton icon="pi pi-print" styleClass="p-button-rounded p-button-primary" (click)="descargarPDF()"> Imprimir</button>
+                                <div class="flex flex-wrap gap-2">
+                                    <p-button label="Ver Historial de Ventas" icon="pi pi-file" (click)="verHistorialVentas()" styleClass="p-button-info"></p-button>
+                                    <p-button label="Ver Historial de Gastos" icon="pi pi-file" (click)="verHistorialGastos()" styleClass="p-button-warning"></p-button>
+                                    <!-- <app-ticket-cierre-caja [data]="dataReport"></app-ticket-cierre-caja> -->
+                                    <!-- <button pButton icon="pi pi-print" styleClass="p-button-rounded p-button-primary" (click)="descargarPDF()"> Imprimir</button> -->
+                                    <p-button
+                                        icon="pi pi-image"
+                                        styleClass=" p-button-info"
+                                        (click)="descargarImagen()"
+                                        label="Descargar Imagen">
+                                    </p-button>
+                                </div>
                             </td>
                         </tr>
                     </ng-template>

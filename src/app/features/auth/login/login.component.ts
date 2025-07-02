@@ -25,6 +25,7 @@ export class LoginComponent {
     usuario!: string;
     clave!: string;
     loading: boolean = false;
+    showPassword: boolean = false;
 
     constructor(
         private router: Router,
@@ -102,5 +103,6 @@ export class LoginComponent {
         localStorage.removeItem('rol');
         localStorage.removeItem('token');
         localStorage.removeItem('rol');
+        localStorage.removeItem('caja_id');
     }
 }

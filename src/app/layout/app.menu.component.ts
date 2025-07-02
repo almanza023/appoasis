@@ -22,7 +22,7 @@ export class AppMenuComponent implements OnInit {
             {
                 label: 'Inicio',
                 icon: 'pi pi-fw pi-file',
-                routerLink: 'dashboard',
+                command: () => this.reloadCurrentRoute('dashboard')
             },
         ];
 
@@ -174,7 +174,7 @@ export class AppMenuComponent implements OnInit {
                     {
                         label: 'Reporte Día',
                         icon: 'pi pi-fw pi-align-justify',
-                        command: () => this.reloadCurrentRoute('reportes/dia')
+                        command: () => this.reloadCurrentRoute('reportes/dia/0')
                     },
                     {
                         label: 'Reporte Historico Caja Diaria',
@@ -199,7 +199,7 @@ export class AppMenuComponent implements OnInit {
                     {
                         label: 'Reporte Día',
                         icon: 'pi pi-fw pi-align-justify',
-                        command: () => this.reloadCurrentRoute('reportes/dia')
+                        command: () => this.reloadCurrentRoute('reportes/dia/0')
                     },
 
                 ]

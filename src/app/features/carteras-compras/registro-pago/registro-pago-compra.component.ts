@@ -27,6 +27,7 @@ export class RegistroPagoCompraComponent implements OnInit {
     proveedor: any = {};
     today:string='';
     visible:boolean=false;
+    caja_id: string =  '';
     constructor(
         private carteraService: CarteraCompraService,
         private messageService: MessageService,
@@ -37,6 +38,7 @@ export class RegistroPagoCompraComponent implements OnInit {
     @ViewChild(SelectorTiPoPagoComponent) selectorTipoPago: SelectorTiPoPagoComponent;
 
     ngOnInit() {
+        this.caja_id = localStorage.getItem('caja_id') || '';
         this.today=this.formatDate(new Date());
         this.id = this.route.snapshot.paramMap.get('id');
         this.cartera_id = this.route.snapshot.paramMap.get('id');
@@ -122,6 +124,7 @@ export class RegistroPagoCompraComponent implements OnInit {
         this.loading = true;
         this.nuevoPago.proveedor_id = this.proveedor.id;
         this.nuevoPago.cartera_compra_id = this.cartera_id;
+        this.nuevoPago.caja_id = this.caja_id;
         this.nuevoPago.fecha = this.today;
         setTimeout(() => {
             this.carteraService

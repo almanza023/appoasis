@@ -1,4 +1,5 @@
 import { Component, SimpleChanges, ViewChild } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { ConfirmationService, ConfirmEventType, MessageService } from 'primeng/api';
 import { finalize } from 'rxjs';
 import { AperturaCajaService } from 'src/app/core/services/apertura-caja.service';
@@ -24,22 +25,34 @@ export class ReporteDiaComponent {
     bloquear:boolean=false;
     loading:boolean=false;
     rol:string="";
+    caja_id:string="";
 
-    ngOnInit(): void {
-        this.today = this.formatDate(new Date());
-        this.todayF = this.formatDate(new Date(Date.now() + 86400000)); // Sumar 1 día a la fecha actual
-        this.filter.fechaInicio = this.today;
-        this.filter.fechaFinal=this.todayF;
-        this.getData(this.filter);
-        this.rol=localStorage.getItem('rol');
-    }
+
 
     constructor(
         private service: AperturaCajaService,
         private messageService: MessageService,
         private pdfService: PdfService,
-        private confirmationService: ConfirmationService
+        private confirmationService: ConfirmationService,
+        private route: ActivatedRoute,
     ) {}
+
+    ngOnInit(): void {
+        this.route.paramMap.subscribe(params => {
+            if(params.get('id') =='0'){
+                this.caja_id = localStorage.getItem('caja_id');
+            }else{
+                this.caja_id = params.get('id');
+            }
+        });
+         this.rol = localStorage.getItem('rol');
+            this.today = this.formatDate(new Date());
+            this.todayF = this.formatDate(new Date(Date.now() + 86400000)); // Sumar 1 día a la fecha actual
+            this.filter.fechaInicio = this.today;
+            this.filter.fechaFinal = this.todayF;
+            this.filter.caja_id = this.caja_id;
+            this.getData(this.filter);
+    }
 
     formatDate(date: Date): string {
         const day = String(date.getDate()).padStart(2, '0');
@@ -69,6 +82,17 @@ export class ReporteDiaComponent {
             });
             return;
         }
+
+        if(!this.caja_id || this.caja_id == null || this.caja_id == undefined){
+            this.messageService.add({
+                severity: 'warn',
+                summary: 'Advertencia',
+                detail:"No Existe Caja Abierta",
+                life: 3000,
+            });
+            return;
+        }
+
 
 
 
@@ -143,6 +167,8 @@ export class ReporteDiaComponent {
                         detail:"Error al obtener datos",
                         life: 3000,
                     });
+                    this.loading=false;
+
                 }
             );
         }, 2000);
@@ -150,16 +176,23 @@ export class ReporteDiaComponent {
 
 
     cerrarCaja(item:any){
+        console.log(item);
+
         this.loading=true;
         let user_id=localStorage.getItem('user_id');
         let data={
             user_id,
             fecha_cierre:this.today,
             caja_id:item.caja_id,
-            monto_final:(item.base_inicial + item.totalventas)-item.totalgastos,
+            monto_final:item.totalneto,
             totalgastos:item.totalgastos,
-            totalventas:item.totalventas,
+            totalventas:item.totalventasGeneral,
+            totalabonos:item.totalabonosefectivo,
+            totalpagocompras:item.totalcomprascontado,
             utilidad:item.totalneto,
+            ventasefectivo:item.totalventascontado,
+            pagosefectivo:item.totalabonosefectivo,
+            compracontado:item.totalpagoscompraefectivo
         }
 
         setTimeout(() => {
@@ -246,6 +279,27 @@ export class ReporteDiaComponent {
             }, 0);
         }
         return total;
+    }
+
+    descargarImagen(){
+        import('html2canvas').then(html2canvas => {
+            const element = document.querySelector('.picture'); // Usa una clase específica para las tablas
+            if (element) {
+            html2canvas.default(element as HTMLElement).then(canvas => {
+                const link = document.createElement('a');
+                link.href = canvas.toDataURL('image/png');
+                link.download = `reporte-dia-${this.today}.png`;
+                link.click();
+            });
+            } else {
+            this.messageService.add({
+                severity: 'warn',
+                summary: 'Advertencia',
+                detail: "No se encontraron las tablas para exportar.",
+                life: 3000,
+            });
+            }
+        });
     }
 
 }
