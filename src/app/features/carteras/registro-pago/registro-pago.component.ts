@@ -8,9 +8,11 @@ import {
 import { Table } from 'primeng/table';
 import { finalize } from 'rxjs';
 import { Cliente } from 'src/app/core/interface/Cliente';
+import { ReporteCarteraCliente } from 'src/app/core/interface/ReporteCarteraCliente';
 
 
 import { CarteraService } from 'src/app/core/services/cartera.service';
+import { PdfService } from 'src/app/core/services/pdf.service';
 import { SelectorTiPoPagoComponent } from 'src/app/shared/components/selector-tipo-pago/selector-tipo-pago.component';
 
 @Component({
@@ -31,12 +33,14 @@ export class RegistroPagoComponent implements OnInit {
     today:string='';
     visible:boolean=false;
     caja_id: string = '';
+    facturas: any = [];
     constructor(
         private carteraService: CarteraService,
         private messageService: MessageService,
         private router: Router,
         private route: ActivatedRoute,
-        private confirmationService: ConfirmationService
+        private confirmationService: ConfirmationService,
+        private pdfService:PdfService
     ) {}
     @ViewChild(SelectorTiPoPagoComponent) selectorTipoPago: SelectorTiPoPagoComponent;
 
@@ -72,6 +76,7 @@ export class RegistroPagoComponent implements OnInit {
                         this.cartera = response.data;
                         this.pagos = this.cartera.pagos;
                         this.cliente = this.cartera.cliente;
+                        this.facturas = this.cartera.ventas;
                         this.visible=true;
                     },
                     (error) => {
@@ -207,5 +212,25 @@ export class RegistroPagoComponent implements OnInit {
             .then(() => {
                 this.router.navigate(['carteras/registro-pago/' + venta]);
             });
+    }
+
+    descargarReporte(cartera_id: string) {
+
+        let data: ReporteCarteraCliente = {};
+        data.nombre = this.cliente.nombre;
+        data.numerodocumento = this.cliente.numerodocumento;
+        data.telefono = this.cliente.telefono;
+        data.ciudad = this.cliente.ciudad;
+        data.pagos = this.pagos.map((pago: any) => ({
+            fecha: pago.fecha,
+            tipopago: pago.tipo_pago.nombre,
+            valor: pago.valor,
+        }));
+        data.abonos = this.cartera.abonos;
+        data.saldo = this.cartera.saldo;
+        data.total = this.cartera.total;
+        data.facturas= this.facturas;
+
+        this.pdfService.reporteCarteraClientPdf(data);
     }
 }

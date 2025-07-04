@@ -56,7 +56,7 @@ export class DashboardComponent implements OnInit {
     }
     verReporteDia() {
         // Implementar navegación al reporte del día
-        this.router.navigate(['/reportes/dia']);
+        this.router.navigate(['/reportes/dia/0']);
     }
 
     gestionarProductos() {

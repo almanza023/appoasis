@@ -131,7 +131,15 @@
                 </ng-template>
                 <ng-template pTemplate="body" let-item>
                     <!-- <tr [ngStyle]="{'background-color': item.etiqueta_vencimiento === 'Verde' ? '#abebc6' : item.etiqueta_vencimiento === 'Rojo' ? '#ffccb3' : item.etiqueta_vencimiento === 'Amarillo' ? '#ffe0b2' : 'transparent'}"> -->
-                   <tr>
+                <tr [ngStyle]="{'background-color': item.stock_actual<= 0 ? '#ffccb3' : 'transparent'}">
+                        <!-- <td style="width: 32%; min-width: 10rem">
+                            <span class="p-column-title">Categoría</span>
+                            {{ item.categoria?.nombre }}
+                        </td> -->
+                        <!-- <td style="width: 32%; min-width: 10rem">
+                            <span class="p-column-title">Proveedor</span>
+                            {{ item.proveedor?.nombre }}
+                        </td> -->
 
                        <td style="width: 32%; min-width: 10rem">
                             <span class="p-column-title">Código</span>

@@ -57,9 +57,9 @@
                 [value]="data"
                 [columns]="cols"
                 [rows]="10"
-                [globalFilterFields]="['nombre', 'posicion', 'numero', 'estado']"
+                [globalFilterFields]="['id', 'cliente.nombre', 'fecha', 'estado']"
                 [paginator]="true"
-                [rowsPerPageOptions]="[10, 20, 30]"
+                [rowsPerPageOptions]="[10, 20, 30, 40, 50, data.length]"
                 [showCurrentPageReport]="true"
                 [rowHover]="true"
                 responsiveLayout="scroll"
@@ -215,7 +215,7 @@
                 </ng-template>
                 <ng-template pTemplate="body" let-detalle>
                     <tr>
-                        <td>{{ detalle.producto.nombre }}</td>
+                        <td>{{ detalle.producto.descripcion + (detalle.producto.laboratorio !== 'OTRO' ? ' ' + detalle.producto.laboratorio : '') }}</td>
                         <td>{{ detalle.total_cantidad }}</td>
                         <td>{{ detalle.producto.precio | currency }}</td>
                         <td>{{ detalle.total_subtotal | currency }}</td>

@@ -81,5 +81,12 @@ export class VentaService {
     return this.http.delete<any>(url, {headers});
   }
 
+actualizarDetalle(item:any): Observable<any> {
+    const headers = { 'Authorization': 'Bearer '+localStorage.getItem('token') }
+    let url=`${environment.baseURL}/ventas-detalles-update`;
+    return this.http.post<any>(url, item, {headers});
+  }
+
+
 
 }

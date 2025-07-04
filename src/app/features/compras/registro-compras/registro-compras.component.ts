@@ -134,6 +134,7 @@ export class RegistroComprasComponent implements OnInit {
     }
 
     agregarProducto(producto: any) {
+        console.log(producto);
         if (producto.precio <= 0 || producto.precio ==undefined) {
             this.messageService.add({
                 severity: 'warn',
@@ -143,7 +144,7 @@ export class RegistroComprasComponent implements OnInit {
             });
             return;
         }
-        if (producto.precioCompra <= 0 || producto.precioCompra ==undefined) {
+        if (producto.precio_compra <= 0 || producto.precio_compra ==undefined) {
             this.messageService.add({
                 severity: 'warn',
                 summary: 'Advertencia',
@@ -152,7 +153,7 @@ export class RegistroComprasComponent implements OnInit {
             });
             return;
         }
-        if (producto.cantidad <= 0 || producto.precioCompra ==undefined) {
+        if (producto.cantidad <= 0) {
             this.messageService.add({
                 severity: 'warn',
                 summary: 'Advertencia',
@@ -167,7 +168,7 @@ export class RegistroComprasComponent implements OnInit {
                 compra_id: this.compra_id,
                 producto_id: producto.id,
                 cantidad: producto.cantidad, // Usar la cantidad recibida desde la vista
-                precio: producto.precioCompra,
+                precio: producto.precio_compra,
                 precio_venta: producto.precio,
             };
 

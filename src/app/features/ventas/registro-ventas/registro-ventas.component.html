@@ -38,17 +38,32 @@
     <!-- Card: Detalles de Venta -->
     <div class="col-12 md:col-12">
         <div class="card">
-            <div class="field mb-3">
-                <label for="forma_venta">Forma de Venta</label>
-                <app-selector-forma-venta (itemSeleccionado)="venta.forma_venta = $event.id"></app-selector-forma-venta>
-            </div>
-            <div class="field mb-3">
-                <label for="especial">Factura Cliente Especial</label><br>
-                <p-checkbox [disabled]="venta.estado==1" [(ngModel)]="venta.especial" [binary]="true" (ngModelChange)="venta.especial = $event ? 1 : 0" inputId="especial"></p-checkbox>
-            </div>
-            <div class="field mb-3">
-                <label for="fecha">Fecha</label>
-                <p-calendar id="fecha" [(ngModel)]="today" [showIcon]="true" dateFormat="yy-mm-dd" [disabled]="venta_id !== ''"></p-calendar>
+            <div class="grid">
+                <div class="col-12 md:col-4">
+                    <div class="field mb-3">
+                        <label for="forma_venta">Forma de Venta</label>
+                        <app-selector-forma-venta (itemSeleccionado)="venta.forma_venta = $event.id"></app-selector-forma-venta>
+                    </div>
+                </div>
+
+                <div class="col-12 md:col-4">
+                    <div class="field mb-3">
+                        <label for="fecha">Fecha</label>
+                        <p-calendar id="fecha" [(ngModel)]="today" [showIcon]="true" dateFormat="yy-mm-dd" [disabled]="venta_id !== ''"></p-calendar>
+                    </div>
+                </div>
+                <div class="col-12 md:col-2">
+                    <div class="field mb-3">
+                        <label for="especial">Factura Cliente Especial</label><br>
+                        <p-checkbox [disabled]="venta.estado==1" [(ngModel)]="venta.especial" [binary]="true" (ngModelChange)="venta.especial = $event ? 1 : 0" inputId="especial"></p-checkbox>
+                    </div>
+                </div>
+                <div class="col-12 md:col-2" *ngIf="venta.estado==1">
+                    <div class="field mb-3">
+                       <p-button  label="Descargar Factura" icon="pi pi-download" styleClass="p-button-info" (click)="imprimirFactura()"></p-button>
+                    </div>
+                </div>
+
             </div>
             <p-button label="Seleccionar Productos" icon="pi pi-list" (click)="mostrarDialogoProductos()"></p-button>
         </div>
@@ -70,13 +85,18 @@
                             <th>Acciones</th>
                         </tr>
                     </ng-template>
-                    <ng-template pTemplate="body" let-detalle>
+                    <ng-template pTemplate="body" let-detalle let-i="rowIndex">
                         <tr>
-                            <td>{{ detalle.producto.nombre }}</td>
-                            <td>{{ detalle.total_cantidad }}</td>
-                            <td>{{ detalle.precio | currency }}</td>
+                            <td>{{ detalle.producto.descripcion + (detalle.producto.laboratorio !== 'OTRO' ? ' ' + detalle.producto.laboratorio : '') }}</td>
+                            <td>
+                                <input pInputText type="number" min="1" [(ngModel)]="detalle.total_cantidad" (ngModelChange)="actualizarSubtotal(detalle)" style="width: 70px;" />
+                            </td>
+                            <td>
+                                <input pInputText type="number" min="0" [(ngModel)]="detalle.precio" (ngModelChange)="actualizarSubtotal(detalle)" style="width: 90px;" />
+                            </td>
                             <td>{{ detalle.total_subtotal | currency }}</td>
                             <td>
+                                <!-- <p-button  pRipple icon="pi pi-pencil" class="p-button-rounded p-button-warning" (click)="actualizarDetalle()"></p-button> -->
                                 <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-danger" (click)="confirmEliminarDetalle(detalle)"></button>
                             </td>
                         </tr>
@@ -138,7 +158,7 @@
             </div>
             <div class="field flex align-items-center justify-content-end gap-2 mt-4">
                 <p-button label="Finalizar Venta" icon="pi pi-check" styleClass="p-button-success" (click)="confirm1()"></p-button>
-                <p-button *ngIf="venta.estado==1" label="Descargar Factura" icon="pi pi-download" styleClass="p-button-info" (click)="imprimirFactura()"></p-button>
+
                 <p-button label="Cancelar" icon="pi pi-times" styleClass="p-button-danger" (click)="redireccionarVentas()"></p-button>
             </div>
         </div>
@@ -181,9 +201,11 @@
                     </tr>
                 </ng-template>
                 <ng-template pTemplate="body" let-producto>
-                    <tr>
-                        <td class="col-40"><h4><b>{{ producto.descripcion }}</b></h4><br>
+                    <tr [ngStyle]="{'background-color': producto.stock_actual <= 0 ? '#ffccb3' : 'transparent'}">
+                        <td class="col-40">
+                            <h4><b>{{ producto.descripcion }}</b></h4><br>
                             <b><h5>{{ producto.laboratorio }}</h5></b>
+                            <b><h5>{{ producto.stock_actual }}</h5></b>
                             <b><h5>{{ producto.precio | currency }}</h5></b>
                         </td>
                         <td class="col-15">

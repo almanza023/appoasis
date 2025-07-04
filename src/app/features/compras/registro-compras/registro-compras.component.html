@@ -110,13 +110,13 @@
                 </ng-template>
                 <ng-template pTemplate="body" let-producto>
                     <tr>
-                        <td style="min-width: 250px;">{{ producto.nombre }}</td>
+                        <td style="min-width: 250px;">{{ producto.descripcion }}</td>
                         <td>{{ producto.stock_actual }}</td>
                         <td>
                             <input pInputText type="number" [(ngModel)]="producto.precio" [ngModelOptions]="{ standalone: true }" min="1" [value]="1" />
                         </td>
                         <td>
-                            <input pInputText type="number" [(ngModel)]="producto.precioCompra" [ngModelOptions]="{ standalone: true }" min="1" [value]="1" />
+                            <input pInputText type="number" [(ngModel)]="producto.precio_compra" [ngModelOptions]="{ standalone: true }" min="1" [value]="1" />
                         </td>
                         <td>
                             <input pInputText type="number" [(ngModel)]="producto.cantidad" [ngModelOptions]="{ standalone: true }" min="1" [value]="1" (change)="producto.cantidad = producto.cantidad || 1" />

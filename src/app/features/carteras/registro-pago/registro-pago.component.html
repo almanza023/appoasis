@@ -20,6 +20,12 @@
                         (click)="redireccionar(cartera_id)"
                         styleClass="p-button-info"
                     ></p-button>
+                    <p-button
+                        label="Descargar Reporte"
+                        icon="pi pi-download"
+                        (click)="descargarReporte(cartera_id)"
+                        styleClass="p-button-success"
+                    ></p-button>
                 </div>
                 <br>
                 <div class="grid">
@@ -75,8 +81,36 @@
             </div>
         </div>
 
+
         <div class="grid" *ngIf="visible">
             <div class="col-6 col-md- col-lg-6">
+                <div class="card">
+                    <h3>Facturas</h3>
+                    <p-table
+                        [value]="facturas"
+                        [paginator]="true"
+                        [rows]="20"
+                        dataKey="id"
+                        responsiveLayout="scroll"
+                    >
+                        <ng-template pTemplate="header">
+                            <tr>
+                                <th>N°</th>
+                                <th>Fecha</th>
+                                <th>total</th>
+                            </tr></ng-template
+                        >
+
+                        <ng-template pTemplate="body" let-factura>
+                            <tr>
+                                <td>{{ factura.id }}</td>
+                                <td>{{ factura.fecha | date : "dd/MM/yyyy" }}</td>
+                                <td>{{ factura.total | currency }}</td>
+                            </tr>
+                        </ng-template>
+                    </p-table>
+                </div>
+
                 <div class="card">
                     <h3>Historial de Pagos</h3>
                     <p-table
@@ -157,6 +191,7 @@
                 </div>
             </div>
         </div>
+
 
         <p-confirmDialog
             [style]="{ width: '90%', maxWidth: '50vw' }"

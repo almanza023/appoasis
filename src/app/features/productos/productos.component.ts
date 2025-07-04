@@ -182,8 +182,8 @@ export class ProductosComponent {
         this.producto = { ...item };
         this.clienteDialog = true;
         this.producto.editar = true;
-        this.categoriaComponent.filtrar(this.producto.categoria_id);
-        this.proveedorComponent.filtrar(this.producto.proveedor_id);
+        //this.categoriaComponent.filtrar(this.producto.categoria_id);
+        //this.proveedorComponent.filtrar(this.producto.proveedor_id);
         //this.ubicacionComponent.filtrar(this.producto.ubicacion_id);
         this.productoForm
             .get('categoria_id')
@@ -214,7 +214,7 @@ export class ProductosComponent {
             .get('fecha_vencimiento')
             .setValue(this.producto.fecha_vencimiento);
 
-        this.productoForm.removeControl('detalles');
+        //this.productoForm.removeControl('detalles');
     }
 
     bloqueoCliente(cliente: any) {

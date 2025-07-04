@@ -15,6 +15,7 @@ import { BuscarClienteComponent } from '../../../shared/components/buscar-client
 import { RegistrarClienteComponent } from 'src/app/shared/components/registrar-cliente/registrar-cliente.component';
 import { SelectorFormaVentaComponent } from 'src/app/shared/components/selector-forma-venta/selector-forma-venta.component';
 import { PdfService } from 'src/app/core/services/pdf.service';
+import { SelectorTiPoPagoComponent } from 'src/app/shared/components/selector-tipo-pago/selector-tipo-pago.component';
 
 @Component({
     selector: 'app-registro-ventas',
@@ -45,9 +46,13 @@ export class RegistroVentasComponent implements OnInit {
     buttonVisible: boolean = true;
     cliente:Cliente={};
     descuento:string='';
+    detalle:any={};
+    mostrarActualizar:boolean = false;
+    botonActivoId: string | null = null; // Variable para almacenar el ID del botón activo
     @ViewChild(BuscarClienteComponent) buscarClienteComponent: BuscarClienteComponent;
     @ViewChild(RegistrarClienteComponent) registrarClienteComponent: RegistrarClienteComponent;
     @ViewChild(SelectorFormaVentaComponent) selectorFormaVentaComponent: SelectorFormaVentaComponent;
+    @ViewChild(SelectorTiPoPagoComponent) selectorTipoPagoComponent: SelectorTiPoPagoComponent;
 
     constructor(
         private productoService: ProductosService,
@@ -149,14 +154,15 @@ export class RegistroVentasComponent implements OnInit {
         // }
 
         if (cantidad > 0) {
+            console.log('Producto a agregar:', producto.descuento);
             const detalle = {
                 venta_id: this.venta_id,
                 descuento: producto.descuento,
                 producto_id: producto.id,
                 cantidad: cantidad, // Usar la cantidad recibida desde la vista
-                precio: producto.precio,
+                precio: producto.descuento!=undefined ? producto.descuento : producto.precio,
             };
-            //console.log(detalle);
+            console.log(detalle);
             this.crearDetalle(detalle);
             this.descuento = '';
             this.dt.filterGlobal('', 'contains');
@@ -192,9 +198,7 @@ export class RegistroVentasComponent implements OnInit {
         this.productoService.getActive().subscribe(
             (response) => {
                 //console.log(response.data);
-                this.productos = response.data.filter(
-                    (producto) => producto.stock_actual > 0
-                );
+                this.productos = response.data;
             },
             (error) => {
                 this.messageService.add({
@@ -216,11 +220,13 @@ export class RegistroVentasComponent implements OnInit {
                 .pipe(finalize(() => this.mapearDatos()))
                 .subscribe(
                     (response) => {
-                        this.infoVenta = response.data;
+                       this.infoVenta = response.data;
                        this.cliente=this.infoVenta.cliente;
                        this.venta=this.infoVenta.venta;
                        this.selectorFormaVentaComponent.filtrar(this.infoVenta.venta.forma_venta);
+                       this.pagos = this.infoVenta.pagos || [];
                        this.venta_id = this.infoVenta.venta.id;
+                       this.today = this.infoVenta.venta.fecha;
 
                     },
                     (error) => {
@@ -415,6 +421,7 @@ export class RegistroVentasComponent implements OnInit {
         this.venta.pagos = this.pagos;
         this.venta.total = this.totalpedido;
         this.venta.cantidad = this.totalcantidad;
+        this.venta.detalles=this.detalles;
 
         setTimeout(() => {
             this.ventaService
@@ -508,16 +515,17 @@ export class RegistroVentasComponent implements OnInit {
             });
             return;
         }
-        if (this.venta.valor == '' || this.venta.valor == undefined) {
+        console.log(this.venta.valor);
+        if (this.venta.valor === '' || this.venta.valor === undefined || this.venta.valor === null) {
             this.messageService.add({
-                severity: 'warn',
-                summary: 'Advertencia',
-                detail: 'Debe Ingresar un Valor',
-                life: 3000,
+            severity: 'warn',
+            summary: 'Advertencia',
+            detail: 'Debe Ingresar un Valor',
+            life: 3000,
             });
             return;
         }
-        if (this.venta.valor <= 0) {
+        if (this.venta.valor < 0) {
             this.messageService.add({
                 severity: 'warn',
                 summary: 'Advertencia',
@@ -664,6 +672,56 @@ return;
     imprimirFactura(){
         this.pdfService.generateInvoicePDF(this.infoVenta);
     }
+
+    actualizarSubtotal(detalle: any) {
+        detalle.total_subtotal = detalle.total_cantidad * detalle.precio;
+        this.calcularTotal();
+        this.mostrarActualizar=true;
+        const index = this.detalles.findIndex((d: any) => d.id === detalle.id);
+        if (index !== -1) {
+            this.detalles[index] = { ...detalle };
+        }
+
+
+
+    }
+
+    actualizarDetalle() {
+        this.ventaService.actualizarDetalle(this.detalle).subscribe(
+            (response) => {
+                let severity = '';
+                let summary = '';
+                if (response.isSuccess == true) {
+                    severity = 'success';
+                    summary = 'Exitoso';
+                    this.detalles = response.data;
+
+                    //this.displayDialog = false;
+                } else {
+                    severity = 'warn';
+                    summary = 'Advertencia';
+                }
+                this.messageService.add({
+                    severity: severity,
+                    summary: summary,
+                    detail: response.message,
+                    life: 3000,
+                });
+                this.mostrarActualizar=false;
+            },
+            (error) => {
+                this.messageService.add({
+                    severity: 'warn',
+                    summary: 'Advertencia',
+                    detail: "Error al actualizar el detalle",
+                    life: 3000,
+                });
+                this.mostrarActualizar=false;
+            }
+        );
+    }
+
+
 
 
 }

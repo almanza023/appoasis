@@ -65,11 +65,7 @@ export class AppMenuComponent implements OnInit {
                 //     routerLink: 'bodegas',
                 // },
 
-                {
-                    label: 'Proveedores',
-                    icon: 'pi pi-fw pi-align-justify',
-                    command: () => this.reloadCurrentRoute('proveedores')
-                },
+
                 {
                     label: 'Usuarios',
                     icon: 'pi pi-fw pi-align-justify',
@@ -88,17 +84,22 @@ export class AppMenuComponent implements OnInit {
                         command: () => this.reloadCurrentRoute('apertura-caja')
 
                     },
-                    {
-                        label: 'Ver Caja',
-                        icon: 'pi pi-fw pi-align-justify',
-                        command: () => this.reloadCurrentRoute('apertura-caja/ver-caja')
+                    // {
+                    //     label: 'Ver Caja',
+                    //     icon: 'pi pi-fw pi-align-justify',
+                    //     command: () => this.reloadCurrentRoute('apertura-caja/ver-caja')
 
-                    },
+                    // },
                     {
                         label: 'Clientes',
                         icon: 'pi pi-fw pi-align-justify',
                         command: () => this.reloadCurrentRoute('clientes')
 
+                    },
+                    {
+                        label: 'Proveedores',
+                        icon: 'pi pi-fw pi-align-justify',
+                        command: () => this.reloadCurrentRoute('proveedores')
                     },
                     {
                         label: 'Carteras',
