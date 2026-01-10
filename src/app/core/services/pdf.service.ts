@@ -5,6 +5,7 @@ import { FacturaData } from '../interface/FacturaData';
 import autoTable from 'jspdf-autotable';
 import { jsPDF } from 'jspdf';
 import { ReporteCarteraCliente } from '../interface/ReporteCarteraCliente';
+import { ReporteCarteraProvedor } from '../interface/ReporteCarteraProvedor';
 
 
 @Injectable({
@@ -15,6 +16,7 @@ export class PdfService {
   constructor() {}
 
   generateInvoicePDF(data: FacturaData): void {
+    console.log('Generating PDF for invoice:', data);
     const doc = new jsPDF();
     let y = 15;
 
@@ -272,6 +274,97 @@ reporteCarteraClientPdf(data: ReporteCarteraCliente): void {
 
     // Descargar PDF
     doc.save(`reporte_cartera_cliente_${data.numerodocumento}.pdf`);
+  }
+
+  reporteCarteraProveedorPdf(data: ReporteCarteraProvedor): void {
+    const doc = new jsPDF();
+    let y = 15;
+
+    // Encabezado principal
+    doc.setFontSize(16);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Reporte de Cartera de Proveedor', 105, y, { align: 'center' });
+    y += 10;
+
+    // Información del Proveedor (uno debajo del otro)
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`Nombre: ${data.nombre || ''}`, 20, y);
+    y += 7;
+    doc.text(`Documento: ${data.numerodocumento || ''}`, 20, y);
+    y += 10;
+
+    // Resumen financiero destacado
+    autoTable(doc, {
+        startY: y,
+        head: [['Total Deuda', 'Total Abonos', 'Saldo Pendiente']],
+        body: [[
+            `$${data.total.toLocaleString('es-CO', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`,
+            `$${data.abonos.toLocaleString('es-CO', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`,
+            `$${data.saldo.toLocaleString('es-CO', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`
+        ]],
+        theme: 'striped',
+        headStyles: { fillColor: [41, 128, 185], textColor: [255, 255, 255], fontStyle: 'bold' },
+        styles: { fontSize: 11, halign: 'center' },
+        margin: { left: 20, right: 20 }
+    });
+    y = (doc as any).lastAutoTable.finalY + 10;
+
+     // Sección de Facturas
+    doc.setFontSize(13);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Facturas Pendientes', 20, y);
+    y += 6;
+
+    autoTable(doc, {
+        startY: y,
+        head: [[' N°', 'Fecha', 'Total', 'Estado']],
+        body: data.facturas.map(item => [
+            item.id,
+            item.fecha,
+            `$${item.total.toLocaleString('es-CO', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`,
+        ]),
+        theme: 'grid',
+        headStyles: { fillColor: [52, 152, 219], textColor: [255, 255, 255] },
+        styles: { fontSize: 10 },
+        margin: { left: 20, right: 20 }
+    });
+    y = (doc as any).lastAutoTable.finalY + 10;
+    // Sección de Pagos Realizados
+    doc.setFontSize(13);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Pagos Realizados', 20, y);
+    y += 6;
+
+    autoTable(doc, {
+        startY: y,
+        head: [['Fecha', 'Tipo de Pago', 'Valor']],
+        body: data.pagos.length
+            ? data.pagos.map(item => [
+                    item.fecha,
+                    item.tipopago,
+                    `$${item.valor.toLocaleString('es-CO', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`
+                ])
+            : [['-', '-', '-']],
+        theme: 'grid',
+        headStyles: { fillColor: [39, 174, 96], textColor: [255, 255, 255] },
+        styles: { fontSize: 10 },
+        margin: { left: 20, right: 20 }
+    });
+    y = (doc as any).lastAutoTable.finalY + 10;
+
+    // Observaciones o resumen final
+    doc.setFontSize(11);
+    doc.setFont('helvetica', 'italic');
+    doc.setTextColor(100);
+    doc.text(
+        `Este reporte muestra el estado actual de la cartera del proveedor. Para más detalles, consulte el sistema.`,
+        20,
+        y
+    );
+
+    // Descargar PDF
+    doc.save(`reporte_cartera_proveedor_${data.numerodocumento}.pdf`);
   }
 
 

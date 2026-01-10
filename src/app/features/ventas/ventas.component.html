@@ -217,7 +217,7 @@
                     <tr>
                         <td>{{ detalle.producto.descripcion + (detalle.producto.laboratorio !== 'OTRO' ? ' ' + detalle.producto.laboratorio : '') }}</td>
                         <td>{{ detalle.total_cantidad }}</td>
-                        <td>{{ detalle.producto.precio | currency }}</td>
+                        <td>{{ detalle.precio | currency }}</td>
                         <td>{{ detalle.total_subtotal | currency }}</td>
                     </tr>
                 </ng-template>

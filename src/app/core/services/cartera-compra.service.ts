@@ -69,6 +69,12 @@ export class CarteraCompraService {
     return this.http.post<any>(url, item, {headers});
   }
 
+  eliminarPago(id: number){
+    const headers = { 'Authorization': 'Bearer '+localStorage.getItem('token') }
+    let url=`${environment.baseURL}/carteras-compras-pagos/${id}`;
+    return this.http.delete<any>(url, {headers});
+  }
+
 
 
 }

@@ -48,6 +48,7 @@ export class ComprasComponent {
         {id:2 , nombre:"FINALIZADA"},
         {id:3 , nombre:"ANULADA"},
     ];
+    loading: boolean = false;
 
 
     constructor(
@@ -65,10 +66,12 @@ export class ComprasComponent {
     }
 
     getDataAll() {
+        this.loading = true;
         this.service.getAll().subscribe(
             (response) => {
                 //console.log(response.data);
                 this.data = response.data;
+                this.loading = false;
             },
             (error) => {
                 this.messageService.add({
@@ -77,6 +80,7 @@ export class ComprasComponent {
                     detail: error.error.data,
                     life: 3000,
                 });
+                this.loading = false;
             }
         );
     }

@@ -69,6 +69,12 @@ export class CarteraService {
     return this.http.post<any>(url, item, {headers});
   }
 
+  eliminarPago(pagoId: number){
+    const headers = { 'Authorization': 'Bearer '+localStorage.getItem('token') }
+    let url=`${environment.baseURL}/carteras-pagos/${pagoId}`;
+    return this.http.delete<any>(url, {headers});
+  }
+
 
 
 }

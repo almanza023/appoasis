@@ -320,7 +320,7 @@ export class RegistroComprasComponent implements OnInit {
                     severity = 'success';
                     summary = 'Exitoso';
                     this.detalles=response.data;
-                    this.displayDialog = false;
+                    this.displayDialog = true;
                 } else {
                     severity = 'warn';
                     summary = 'Advertencia';

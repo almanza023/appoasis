@@ -7,7 +7,9 @@ import {
 } from 'primeng/api';
 import { Table } from 'primeng/table';
 import { finalize } from 'rxjs';
+import { ReporteCarteraProvedor } from 'src/app/core/interface/ReporteCarteraProvedor';
 import { CarteraCompraService } from 'src/app/core/services/cartera-compra.service';
+import { PdfService } from 'src/app/core/services/pdf.service';
 import { SelectorTiPoPagoComponent } from 'src/app/shared/components/selector-tipo-pago/selector-tipo-pago.component';
 
 @Component({
@@ -28,8 +30,10 @@ export class RegistroPagoCompraComponent implements OnInit {
     today:string='';
     visible:boolean=false;
     caja_id: string =  '';
+    facturas: any = [];
     constructor(
         private carteraService: CarteraCompraService,
+        private pdfService: PdfService,
         private messageService: MessageService,
         private router: Router,
         private route: ActivatedRoute,
@@ -69,6 +73,7 @@ export class RegistroPagoCompraComponent implements OnInit {
                         this.cartera = response.data;
                         this.pagos = this.cartera.pagos;
                         this.proveedor = this.cartera.proveedor;
+                        this.facturas = this.cartera.compras;
                         this.visible=true;
                     },
                     (error) => {
@@ -201,7 +206,70 @@ export class RegistroPagoCompraComponent implements OnInit {
         this.router
             .navigateByUrl('/', { skipLocationChange: true })
             .then(() => {
-                this.router.navigate(['carteras-compras/registro-pago/' + venta]);
+                this.router.navigate(['carteras-compras/registro-pago-compra/' + venta]);
             });
+    }
+
+    descargarReporte(cartera_id: string) {
+
+            let data: ReporteCarteraProvedor = {};
+            data.nombre = this.proveedor.nombre;
+            data.numerodocumento = this.proveedor.numerodocumento;
+            data.pagos = this.pagos.map((pago: any) => ({
+                fecha: pago.fecha,
+                tipopago: pago.tipo_pago.nombre,
+                valor: pago.valor,
+            }));
+            data.abonos = this.cartera.abonos;
+            data.saldo = this.cartera.saldo;
+            data.total = this.cartera.total;
+            data.facturas= this.facturas;
+
+            this.pdfService.reporteCarteraProveedorPdf(data);
+    }
+
+    getTotalfacturas(): number {
+        return this.facturas.reduce((total: number, factura: any) => {
+            return total + factura.total;
+        }, 0);
+    }
+    getTotalPagos(): number {
+        return this.pagos.reduce((total: number, pago: any) => {
+            return total + pago.valor;
+        }, 0);
+    }
+
+    confirmelimianrPago(pagoId: number) {
+        this.confirmationService.confirm({
+            message: '¿Está seguro de eliminar el Pago?',
+            header: 'Confirmación',
+            icon: 'pi pi-exclamation-triangle',
+            acceptLabel: 'Aceptar', // Texto del botón Aceptar
+            rejectLabel: 'Cancelar', // Texto del botón Cancelar
+            accept: () => {
+                this.deletePago(pagoId);
+            },
+            reject: (type) => {
+                switch (type) {
+                    case ConfirmEventType.REJECT:
+                        this.buttonVisible = false;
+                        break;
+                    case ConfirmEventType.CANCEL:
+                        break;
+                }
+            },
+        });
+    }
+
+    deletePago(pagoId: number){
+        this.carteraService.eliminarPago(pagoId).subscribe({
+            next: (response) => {
+                this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Pago eliminado correctamente' });
+                this.getCartera();
+            },
+            error: (error) => {
+                this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al eliminar el pago' });
+            }
+        });
     }
 }

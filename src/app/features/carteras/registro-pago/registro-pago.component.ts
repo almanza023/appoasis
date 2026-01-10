@@ -233,4 +233,49 @@ export class RegistroPagoComponent implements OnInit {
 
         this.pdfService.reporteCarteraClientPdf(data);
     }
+
+    getTotalfacturas(): number {
+        return this.facturas.reduce((total: number, factura: any) => {
+            return total + factura.total;
+        }, 0);
+    }
+    getTotalPagos(): number {
+        return this.pagos.reduce((total: number, pago: any) => {
+            return total + pago.valor;
+        }, 0);
+    }
+
+     confirmelimianrPago(pagoId: number) {
+        this.confirmationService.confirm({
+            message: '¿Está seguro de eliminar el Pago?',
+            header: 'Confirmación',
+            icon: 'pi pi-exclamation-triangle',
+            acceptLabel: 'Aceptar', // Texto del botón Aceptar
+            rejectLabel: 'Cancelar', // Texto del botón Cancelar
+            accept: () => {
+                this.deletePago(pagoId);
+            },
+            reject: (type) => {
+                switch (type) {
+                    case ConfirmEventType.REJECT:
+                        this.buttonVisible = false;
+                        break;
+                    case ConfirmEventType.CANCEL:
+                        break;
+                }
+            },
+        });
+    }
+
+    deletePago(pagoId: number){
+        this.carteraService.eliminarPago(pagoId).subscribe({
+            next: (response) => {
+                this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Pago eliminado correctamente' });
+                this.getCartera();
+            },
+            error: (error) => {
+                this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al eliminar el pago' });
+            }
+        });
+    }
 }
