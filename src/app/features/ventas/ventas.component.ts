@@ -5,6 +5,8 @@ import { Table } from 'primeng/table';
 import { MessageService } from 'primeng/api';
 import { Router } from '@angular/router';
 import { VentaService } from 'src/app/core/services/venta.service';
+import { PdfService } from 'src/app/core/services/pdf.service';
+import { FacturaData } from 'src/app/core/interface/FacturaData';
 
 
 @Component({
@@ -48,19 +50,31 @@ export class VentasComponent {
     constructor(
         private service: VentaService,
         private router: Router,
-        private messageService: MessageService
+        private messageService: MessageService,
+        private pdfService: PdfService
     ) {}
 
 
 
     ngOnInit() {
         this.rol = localStorage.getItem('rol');
-        this.buscar();
         this.cols = [ ];
         this.statuses = [];
 
-        this.fechaInicial = format(new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1), "YYYY-MM-DD"); // fecha inicial del mes anterior
-        this.fechaFinal = format(new Date(), "YYYY-MM-DD"); // fecha actual
+        const hoy = new Date();
+        const anioActual = hoy.getFullYear();
+        const mesActual = hoy.getMonth();
+
+        this.fechaInicial = format(
+            new Date(anioActual, mesActual, 1),
+            "YYYY-MM-DD"
+        );
+        this.fechaFinal = format(
+            new Date(anioActual, mesActual + 1, 0),
+            "YYYY-MM-DD"
+        );
+
+        this.buscar();
 
     }
 
@@ -203,6 +217,7 @@ export class VentasComponent {
             (response) => {
                 //console.log(response.data);
                 this.clienteDialog=true;
+                this.seleccionado = response.data;
                 this.detalles = response.data.detalles;
             },
             (error) => {
@@ -245,7 +260,45 @@ export class VentasComponent {
         );
     }
 
+    descargarReporte(venta: any) {
+        if (!this.detalles || this.detalles.length === 0) {
+            this.messageService.add({
+                severity: 'warn',
+                summary: 'Advertencia',
+                detail: 'Debe cargar los detalles de la venta primero',
+                life: 3000,
+            });
+            return;
+        }
 
+        const facturaData: FacturaData = {
+            venta: venta,
+            cliente: venta.cliente,
+            detalles: this.detalles,
+            pagos: venta.pagos || []
+        };
 
+        this.pdfService.generateInvoicePDF(facturaData);
+    }
 
+    imprimirReporte(venta: any) {
+        if (!this.detalles || this.detalles.length === 0) {
+            this.messageService.add({
+                severity: 'warn',
+                summary: 'Advertencia',
+                detail: 'Debe cargar los detalles de la venta primero',
+                life: 3000,
+            });
+            return;
+        }
+
+        const facturaData: FacturaData = {
+            venta: venta,
+            cliente: venta.cliente,
+            detalles: this.detalles,
+            pagos: venta.pagos || []
+        };
+
+        this.pdfService.printInvoicePDF(facturaData);
+    }
 }

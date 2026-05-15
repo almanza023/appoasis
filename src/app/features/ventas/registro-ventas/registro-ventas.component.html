@@ -116,12 +116,12 @@
         <div class="card mt-4">
             <h5>Medios de Pago</h5>
             <div class="field flex align-items-center gap-2">
-                <app-selector-tipo-pago (itemSeleccionado)="tipopago = $event"></app-selector-tipo-pago>
+                <app-selector-tipo-pago (itemSeleccionado)="onTipoPagoSeleccionado($event)"></app-selector-tipo-pago>
                 <label for="valor">Valor:</label>
                 <input pInputText type="number" id="valor" [(ngModel)]="venta.valor" (ngModelChange)="compararValor()" />
                 <p *ngIf="venta.valor > calcularTotal()" style="color: red;">El valor ingresado excede el total de la Venta.</p>
-                <p-button label="Agregar" icon="pi pi-plus" (click)="agregarPago()" styleClass="p-button-success"></p-button>
-                <p-button label="Agregar Total" icon="pi pi-plus" (click)="agregarPagoTotal()" styleClass="p-button-info"></p-button>
+                <p-button label="Agregar" icon="pi pi-plus" (click)="agregarPago($event)" styleClass="p-button-success"></p-button>
+                <p-button label="Agregar Total" icon="pi pi-plus" (click)="agregarPagoTotal($event)" styleClass="p-button-info"></p-button>
             </div>
             <div class="field mt-2" *ngIf="tipopago.id ==1">
                 <label for="dineroRecibido">Dinero Recibido:</label>
@@ -197,6 +197,7 @@
                         <th class="col-40">Nombre</th>
                         <th class="col-15">Cantidad</th>
                         <th class="col-15">Precio Nuevo</th>
+                        <th class="col-15">Subtotal</th>
                         <th></th>
                     </tr>
                 </ng-template>
@@ -213,6 +214,14 @@
                         </td>
                         <td>
                             <p-inputNumber class="w-full" [(ngModel)]="producto.descuento" [ngModelOptions]="{ standalone: true }" [min]="0" [showButtons]="false" (change)="producto.descuento = producto.descuento || 0"></p-inputNumber>
+                        </td>
+                        <td>
+                            <input
+                                pInputText
+                                class="w-full"
+                                [value]="((producto.descuento || producto.precio || 0) * (producto.cantidad || 0)) | currency"
+                                readonly
+                            />
                         </td>
                         <td>
                             <br>

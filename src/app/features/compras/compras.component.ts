@@ -1,8 +1,9 @@
 import { Component, ViewChild } from '@angular/core';
 import { finalize } from 'rxjs';
+import { format } from '@formkit/tempo';
 
 import { Table } from 'primeng/table';
-import { MessageService } from 'primeng/api';
+import { ConfirmEventType, ConfirmationService, MessageService } from 'primeng/api';
 
 
 
@@ -14,7 +15,7 @@ import { ComprasService } from 'src/app/core/services/compras.service';
 @Component({
     selector: 'app-compras',
     templateUrl: './compras.component.html',
-    providers: [MessageService],
+    providers: [MessageService, ConfirmationService],
 })
 export class ComprasComponent {
     clienteDialog: boolean = false;
@@ -54,15 +55,31 @@ export class ComprasComponent {
     constructor(
         private service: ComprasService,
         private router: Router,
-        private messageService: MessageService
+        private messageService: MessageService,
+        private confirmationService: ConfirmationService
     ) {}
 
 
 
     ngOnInit() {
-        this.getDataAll();
         this.cols = [ ];
         this.statuses = [];
+
+        const hoy = new Date();
+        const anioActual = hoy.getFullYear();
+        const mesActual = hoy.getMonth();
+
+        this.fechaInicial = format(
+            new Date(anioActual, mesActual, 1),
+            'YYYY-MM-DD'
+        );
+        this.fechaFinal = format(
+            new Date(anioActual, mesActual + 1, 0),
+            'YYYY-MM-DD'
+        );
+        this.filtroEstado = 0;
+
+        this.buscar();
     }
 
     getDataAll() {
@@ -110,6 +127,59 @@ export class ComprasComponent {
 
     openNew(id:any) {
         this.router.navigate(['/compras/registro/'+id]); // Redirigir a la lista de pedidos
+    }
+
+    confirmEliminarCompra(item: any) {
+        this.confirmationService.confirm({
+            message: `¿Está seguro de eliminar la compra ${item.id}?`,
+            header: 'Confirmación',
+            icon: 'pi pi-exclamation-triangle',
+            acceptLabel: 'Aceptar',
+            rejectLabel: 'Cancelar',
+            accept: () => {
+                this.eliminarCompra(item.id);
+            },
+            reject: (type) => {
+                switch (type) {
+                    case ConfirmEventType.REJECT:
+                        break;
+                    case ConfirmEventType.CANCEL:
+                        break;
+                }
+            },
+        });
+    }
+
+    eliminarCompra(compraId: any) {
+        const userId = localStorage.getItem('user_id');
+
+        this.loading = true;
+        this.service
+            .deleteCompra(compraId, userId)
+            .pipe(
+                finalize(() => {
+                    this.loading = false;
+                    this.buscar();
+                })
+            )
+            .subscribe(
+                (response) => {
+                    this.messageService.add({
+                        severity: response?.isSuccess ? 'success' : 'warn',
+                        summary: response?.isSuccess ? 'Exitoso' : 'Advertencia',
+                        detail: response?.message || 'No fue posible eliminar la compra',
+                        life: 3000,
+                    });
+                },
+                (error) => {
+                    this.messageService.add({
+                        severity: 'error',
+                        summary: 'Advertencia',
+                        detail: error?.error?.message || 'Error al eliminar la compra',
+                        life: 3000,
+                    });
+                }
+            );
     }
 
     deleteSelectedProducts() {

@@ -109,6 +109,14 @@
                             Total
                             <p-sortIcon field="total"></p-sortIcon>
                         </th>
+                        <th pSortableColumn="abono">
+                            Abonos
+                            <p-sortIcon field="abono"></p-sortIcon>
+                        </th>
+                        <th pSortableColumn="saldo">
+                            Saldo
+                            <p-sortIcon field="saldo"></p-sortIcon>
+                        </th>
                         <th pSortableColumn="estado">
                             Estado
                             <p-sortIcon field="estado"></p-sortIcon>
@@ -148,6 +156,16 @@
                             {{ item.total | currency }}
                         </td>
 
+                          <td style="width: 32%; min-width: 10rem">
+                            <span class="p-column-title">Abonos</span>
+                            {{ item.abono | currency }}
+                        </td>
+
+                          <td style="width: 32%; min-width: 10rem">
+                            <span class="p-column-title">Saldo</span>
+                            {{ item.saldo | currency }}
+                        </td>
+
                         <td style="width: 26%; min-width: 10rem">
                             <span class="p-column-title">Estado</span>
                             {{
@@ -178,6 +196,7 @@
                                 styleClass="p-button-rounded p-button-danger"
                                 tooltip="Anular Venta"
                             ></p-button>
+
                             </div>
                         </td>
                     </tr>
@@ -228,12 +247,21 @@
                 <h3>Cantidad Productos: {{ totalcantidad  }}</h3>
             </div>
 
-            <div *ngIf="observaciones!=''" class="field mt-2">
+            <div *ngIf="observaciones !== ''" class="field mt-2">
                 <label for="observaciones"><b>Observaciones</b></label>
                 <p style="font-size: 1.2rem">{{observaciones}}</p>
             </div>
 
+            <div class="field mt-4 flex justify-content-end gap-2">
 
+
+                <p-button
+                    label="Cerrar"
+                    icon="pi pi-times"
+                    (click)="hideDialog()"
+                    styleClass="p-button-secondary"
+                ></p-button>
+            </div>
 
         </div>
         </div>

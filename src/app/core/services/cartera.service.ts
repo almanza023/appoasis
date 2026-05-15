@@ -49,6 +49,12 @@ export class CarteraService {
     return this.http.post<any>(url, item, {headers});
   }
 
+  postAplicarPagosFacturas(data:any): Observable<any> {
+    const headers = { 'Authorization': 'Bearer '+localStorage.getItem('token') }
+    let url=`${environment.baseURL}/carteras-aplicar-pagos-facturas`;
+    return this.http.post<any>(url, data, {headers});
+  }
+
   postEstado(data:any): Observable<any> {
     const headers = { 'Authorization': 'Bearer '+localStorage.getItem('token') }
     let url=`${environment.baseURL}/carteras/cambiarEstado`;

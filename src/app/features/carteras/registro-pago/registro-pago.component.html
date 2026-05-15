@@ -51,7 +51,7 @@
                             <div class="flex align-items-center">
                                 <i
                                     class="pi pi-car text-{{
-                                        cartera?.estado == 1 ? 'green' : 'red'
+                                        cartera?.estado === 1 ? 'green' : 'red'
                                     }}-600 text-2xl mr-3"
                                 ></i>
                                 <div>
@@ -62,9 +62,9 @@
                                     >
                                     <b>
                                         {{
-                                            cartera?.estado == 1
+                                            cartera?.estado === 1
                                                 ? "PENDIENTE"
-                                                : cartera?.estado == 2
+                                                : cartera?.estado === 2
                                                 ? "PAGADA"
                                                 : "ANULADA"
                                         }}</b
@@ -134,7 +134,15 @@
         <div class="grid" *ngIf="visible">
             <div class="col-6 col-md- col-lg-6">
                 <div class="card">
-                    <h3>Facturas</h3>
+                    <div class="flex justify-content-between align-items-center mb-2">
+                        <h3 class="m-0">Facturas</h3>
+                        <p-button
+                            label="Actualizar Saldos"
+                            icon="pi pi-refresh"
+                            styleClass="p-button-warning"
+                            (click)="actualizarSaldosFacturas()"
+                        ></p-button>
+                    </div>
                     <div class="mb-3 text-2xl">
                         <span class="font-bold">Saldo Inicial:</span>
                         <span>{{ cartera.saldoinicial | currency }}</span>
@@ -143,6 +151,10 @@
                         [value]="facturas"
                         [paginator]="true"
                         [rows]="20"
+                        selectionMode="single"
+                        [(selection)]="facturaSeleccionada"
+                        (onRowSelect)="onFacturaSelect($event)"
+                        (onRowUnselect)="onFacturaUnselect()"
                         dataKey="id"
                         responsiveLayout="scroll"
                     >
@@ -150,17 +162,21 @@
                             <tr>
                                 <th>N°</th>
                                 <th>Fecha</th>
-                                <th>total</th>
+                                <th>Total</th>
+                                <th>Abonos</th>
+                                <th>Saldo Pendiente</th>
                             </tr></ng-template
                         >
 
                         <ng-template pTemplate="body" let-factura>
-                            <tr>
+                            <tr [pSelectableRow]="factura">
                                 <td>{{ factura.id }}</td>
                                 <td>
                                     {{ factura.fecha | date : "dd/MM/yyyy" }}
                                 </td>
                                 <td>{{ factura.total | currency }}</td>
+                                <td>{{ factura.abono | currency }}</td>
+                                <td>{{ factura.saldo | currency }}</td>
                             </tr>
                         </ng-template>
                         <ng-template pTemplate="footer">
@@ -170,6 +186,12 @@
                                 </td>
                                 <td class="font-bold">
                                     {{ getTotalfacturas() | currency }}
+                                </td>
+                                <td class="font-bold">
+                                    {{ getTotalAbonos() | currency }}
+                                </td>
+                                <td class="font-bold">
+                                    {{ getTotalSaldos() | currency }}
                                 </td>
                             </tr>
                         </ng-template>
@@ -227,6 +249,26 @@
             <div class="col-6 col-md-6 col-lg-6">
                 <div class="card p-fluid">
                     <h3>Registrar Pago</h3>
+                    <div class="field grid" *ngIf="facturaSeleccionada">
+                        <div class="col-12">
+                            <div class="p-3 border-1 border-300 border-round bg-blue-50">
+                                <div class="font-bold mb-2">Factura Seleccionada</div>
+                                <div>N°: {{ facturaSeleccionada.id }}</div>
+                                <div>
+                                    Fecha:
+                                    {{ facturaSeleccionada.fecha | date : "dd/MM/yyyy" }}
+                                </div>
+                                <div>Saldo: {{ facturaSeleccionada.saldo | currency }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="field grid" *ngIf="!facturaSeleccionada">
+                        <div class="col-12">
+                            <small class="text-500">
+                                Seleccione una factura para asociar el pago (opcional).
+                            </small>
+                        </div>
+                    </div>
                     <div class="field grid">
                         <label htmlFor="fecha" class="col-12 mb-2">Fecha</label>
                         <div class="col-12">

@@ -34,6 +34,7 @@ export class RegistroPagoComponent implements OnInit {
     visible:boolean=false;
     caja_id: string = '';
     facturas: any = [];
+    facturaSeleccionada: any = null;
     constructor(
         private carteraService: CarteraService,
         private messageService: MessageService,
@@ -77,6 +78,8 @@ export class RegistroPagoComponent implements OnInit {
                         this.pagos = this.cartera.pagos;
                         this.cliente = this.cartera.cliente;
                         this.facturas = this.cartera.ventas;
+                        this.facturaSeleccionada = null;
+                        this.nuevoPago.venta_id = null;
                         this.visible=true;
                     },
                     (error) => {
@@ -133,6 +136,7 @@ export class RegistroPagoComponent implements OnInit {
         this.nuevoPago.cliente_id = this.cliente.id;
         this.nuevoPago.cartera_id = this.cartera_id;
         this.nuevoPago.caja_id = this.caja_id;
+        this.nuevoPago.venta_id = this.facturaSeleccionada?.id || null;
 
         this.nuevoPago.fecha = this.today;
         setTimeout(() => {
@@ -168,9 +172,60 @@ export class RegistroPagoComponent implements OnInit {
                 );
             this.loading = false;
             this.nuevoPago={};
+            this.facturaSeleccionada = null;
             this.selectorTipoPago.reiniciarComponente();
 
         }, 2000);
+    }
+
+    onFacturaSelect(event: any) {
+        this.facturaSeleccionada = event?.data || null;
+        this.nuevoPago.venta_id = this.facturaSeleccionada?.id || null;
+        this.nuevoPago.valor = Number(this.facturaSeleccionada?.saldo || 0);
+    }
+
+    onFacturaUnselect() {
+        this.facturaSeleccionada = null;
+        this.nuevoPago.venta_id = null;
+        this.nuevoPago.valor = null;
+    }
+
+    actualizarSaldosFacturas() {
+        if (!this.cartera_id) {
+            this.messageService.add({
+                severity: 'warn',
+                summary: 'Advertencia',
+                detail: 'Debe seleccionar una cartera',
+                life: 3000,
+            });
+            return;
+        }
+
+        this.loading = true;
+        this.carteraService
+            .postAplicarPagosFacturas({ cartera_id: Number(this.cartera_id) })
+            .pipe(finalize(() => (this.loading = false)))
+            .subscribe(
+                (response) => {
+                    this.messageService.add({
+                        severity: response?.isSuccess ? 'success' : 'warn',
+                        summary: response?.isSuccess ? 'Exitoso' : 'Advertencia',
+                        detail:
+                            response?.message ||
+                            'Saldos de facturas actualizados',
+                        life: 3000,
+                    });
+                    this.getCartera();
+                },
+                () => {
+                    this.messageService.add({
+                        severity: 'error',
+                        summary: 'Error',
+                        detail: 'No fue posible actualizar saldos de facturas',
+                        life: 3000,
+                    });
+                }
+            );
     }
 
     confirm1() {
@@ -277,5 +332,17 @@ export class RegistroPagoComponent implements OnInit {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al eliminar el pago' });
             }
         });
+    }
+
+    getTotalAbonos(): number {
+        return this.facturas.reduce((total: number, factura: any) => {
+            return total + factura.abono;
+        }, 0);
+    }
+
+    getTotalSaldos(): number {
+        return this.facturas.reduce((total: number, factura: any) => {
+            return total + factura.saldo;
+        }, 0);
     }
 }

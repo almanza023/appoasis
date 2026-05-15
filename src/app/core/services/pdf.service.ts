@@ -15,6 +15,11 @@ export class PdfService {
 
   constructor() {}
 
+  private formatCurrency(value: any): string {
+    const numValue = Number(value) || 0;
+    return `$${numValue.toLocaleString('es-CO', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+  }
+
   generateInvoicePDF(data: FacturaData): void {
     console.log('Generating PDF for invoice:', data);
     const doc = new jsPDF();
@@ -52,11 +57,11 @@ export class PdfService {
         startY: y,
         head: [['Cliente', 'Documento', 'Teléfono', 'Ciudad', 'Dirección']],
         body: [[
-            data.cliente.nombre || '',
-            data.cliente.numerodocumento || '',
-            data.cliente.telefono || '',
-            data.cliente.ciudad || '',
-            data.cliente.direccion || ''
+            data.cliente?.nombre || '',
+            data.cliente?.numerodocumento || '',
+            data.cliente?.telefono || '',
+            data.cliente?.ciudad || '',
+            data.cliente?.direccion || ''
         ]],
         theme: 'striped',
         headStyles: { fillColor: [41, 128, 185], textColor: [255, 255, 255], fontStyle: 'bold' },
@@ -71,10 +76,10 @@ export class PdfService {
         head: [['#', 'Producto', 'Cantidad', 'Precio Unitario', 'Subtotal']],
         body: data.detalles.map((item, idx) => [
             idx + 1,
-            item.producto.nombre,
-            item.total_cantidad,
-            `$${item.precio.toLocaleString('es-CO', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`,
-            `$${item.total_subtotal.toLocaleString('es-CO', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`
+            item.producto?.nombre || 'Producto sin nombre',
+            item.total_cantidad || 0,
+            this.formatCurrency(item.precio),
+            this.formatCurrency(item.total_subtotal)
         ]),
         theme: 'grid',
         headStyles: { fillColor: [52, 152, 219], textColor: [255, 255, 255] },
@@ -88,7 +93,7 @@ export class PdfService {
         startY: y,
         head: [['Total']],
         body: [[
-            `$${data.venta.total.toLocaleString('es-CO', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`
+            this.formatCurrency(data.venta.total)
         ]],
         theme: 'plain',
         styles: { fontSize: 12, halign: 'right' },
@@ -131,6 +136,103 @@ export class PdfService {
     doc.save(`remision_${data.venta.id}.pdf`);
   }
 
+  printInvoicePDF(data: FacturaData): void {
+    console.log('Printing PDF for invoice:', data);
+    const doc = new jsPDF();
+    let y = 15;
+
+    doc.setFontSize(18);
+    doc.setFont('helvetica', 'bold');
+    doc.text('REPORTE DE REMISIÓN', 105, y, { align: 'center' });
+    y += 10;
+
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`Remisión N°: ${data.venta.id}`, 15, y);
+    doc.text(`Fecha: ${new Date(data.venta.created_at).toLocaleDateString()}   Hora: ${new Date(data.venta.created_at).toLocaleTimeString()}`, 120, y);
+    y += 8;
+
+    let formaVentaTexto = '';
+    if (data.venta.forma_venta === 1) {
+        formaVentaTexto = 'CONTADO';
+    } else if (data.venta.forma_venta === 2) {
+        formaVentaTexto = 'CRÉDITO';
+    } else {
+        formaVentaTexto =  '';
+    }
+    doc.text(`Forma de Venta: ${formaVentaTexto}`, 15, y);
+    y += 8;
+
+    autoTable(doc, {
+        startY: y,
+        head: [['Cliente', 'Documento', 'Teléfono', 'Ciudad', 'Dirección']],
+        body: [[
+            data.cliente?.nombre || '',
+            data.cliente?.numerodocumento || '',
+            data.cliente?.telefono || '',
+            data.cliente?.ciudad || '',
+            data.cliente?.direccion || ''
+        ]],
+        theme: 'striped',
+        headStyles: { fillColor: [41, 128, 185], textColor: [255, 255, 255], fontStyle: 'bold' },
+        styles: { fontSize: 10 },
+        margin: { left: 15, right: 15 }
+    });
+    y = (doc as any).lastAutoTable.finalY + 8;
+
+    autoTable(doc, {
+        startY: y,
+        head: [['#', 'Producto', 'Cantidad', 'Precio Unitario', 'Subtotal']],
+        body: data.detalles.map((item, idx) => [
+            idx + 1,
+            item.producto?.nombre || 'Producto sin nombre',
+            item.total_cantidad || 0,
+            this.formatCurrency(item.precio),
+            this.formatCurrency(item.total_subtotal)
+        ]),
+        theme: 'grid',
+        headStyles: { fillColor: [52, 152, 219], textColor: [255, 255, 255] },
+        styles: { fontSize: 10 },
+        margin: { left: 15, right: 15 }
+    });
+    y = (doc as any).lastAutoTable.finalY + 8;
+
+    autoTable(doc, {
+        startY: y,
+        head: [['Total']],
+        body: [[
+            this.formatCurrency(data.venta.total)
+        ]],
+        theme: 'plain',
+        styles: { fontSize: 12, halign: 'right' },
+        margin: { left: 130, right: 15 }
+    });
+
+    if (data.venta.observaciones) {
+        y = (doc as any).lastAutoTable.finalY + 10;
+        doc.setFontSize(11);
+        doc.setFont('helvetica', 'italic');
+        doc.setTextColor(100);
+        doc.text('Observaciones:', 15, y);
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(50);
+        doc.text(data.venta.observaciones, 15, y + 6);
+    }
+    doc.setTextColor(0);
+
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'italic');
+    doc.text('Este documento es una remisión generada automáticamente. Para más información consulte el sistema.', 15, 285);
+
+    // Abrir en ventana nueva para imprimir
+    const pdfUrl = doc.output('dataurlstring');
+    const printWindow = window.open(pdfUrl);
+    if (printWindow) {
+      printWindow.onload = function() {
+        printWindow.print();
+      };
+    }
+  }
 
 cierreCajaPDF(data:any){
     const doc = new jsPDF();
@@ -202,22 +304,6 @@ reporteCarteraClientPdf(data: ReporteCarteraCliente): void {
     doc.text(`Ciudad: ${data.ciudad || ''}`, 120, y);
     y += 10;
 
-    // Resumen financiero destacado
-    autoTable(doc, {
-        startY: y,
-        head: [['Total Deuda', 'Total Abonos', 'Saldo Pendiente']],
-        body: [[
-            `$${data.total.toLocaleString('es-CO', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`,
-            `$${data.abonos.toLocaleString('es-CO', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`,
-            `$${data.saldo.toLocaleString('es-CO', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`
-        ]],
-        theme: 'striped',
-        headStyles: { fillColor: [41, 128, 185], textColor: [255, 255, 255], fontStyle: 'bold' },
-        styles: { fontSize: 11, halign: 'center' },
-        margin: { left: 20, right: 20 }
-    });
-    y = (doc as any).lastAutoTable.finalY + 10;
-
     // Sección de Facturas
     doc.setFontSize(13);
     doc.setFont('helvetica', 'bold');
@@ -226,11 +312,13 @@ reporteCarteraClientPdf(data: ReporteCarteraCliente): void {
 
     autoTable(doc, {
         startY: y,
-        head: [[' N°', 'Fecha', 'Total', 'Estado']],
+        head: [[' N°', 'Fecha', 'Total', 'Abonos', 'Saldo']],
         body: data.facturas.map(item => [
             item.id,
             item.fecha,
             `$${item.total.toLocaleString('es-CO', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`,
+            `$${(item.abono || 0).toLocaleString('es-CO', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`,
+            `$${(item.saldo || 0).toLocaleString('es-CO', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`,
         ]),
         theme: 'grid',
         headStyles: { fillColor: [52, 152, 219], textColor: [255, 255, 255] },
@@ -258,6 +346,22 @@ reporteCarteraClientPdf(data: ReporteCarteraCliente): void {
         theme: 'grid',
         headStyles: { fillColor: [39, 174, 96], textColor: [255, 255, 255] },
         styles: { fontSize: 10 },
+        margin: { left: 20, right: 20 }
+    });
+    y = (doc as any).lastAutoTable.finalY + 10;
+
+    // Resumen financiero destacado
+    autoTable(doc, {
+        startY: y,
+        head: [['Total Deuda', 'Total Abonos', 'Saldo Pendiente']],
+        body: [[
+            `$${data.total.toLocaleString('es-CO', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`,
+            `$${data.abonos.toLocaleString('es-CO', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`,
+            `$${data.saldo.toLocaleString('es-CO', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`
+        ]],
+        theme: 'striped',
+        headStyles: { fillColor: [41, 128, 185], textColor: [255, 255, 255], fontStyle: 'bold' },
+        styles: { fontSize: 11, halign: 'center' },
         margin: { left: 20, right: 20 }
     });
     y = (doc as any).lastAutoTable.finalY + 10;

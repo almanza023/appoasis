@@ -171,6 +171,12 @@
                                     icon="pi pi-check"
                                     styleClass="p-button-rounded p-button-info"
                                 ></p-button>
+                                <p-button
+                                    (click)="confirmEliminarCompra(item)"
+                                    icon="pi pi-trash"
+                                    styleClass="p-button-rounded p-button-danger"
+                                    tooltip="Eliminar Compra"
+                                ></p-button>
                             </div>
                         </td>
                     </tr>
@@ -215,6 +221,8 @@
         </div>
         </div>
 </p-dialog>
+
+<p-confirmDialog [style]="{width: '90%', maxWidth: '40vw'}"></p-confirmDialog>
 
 <p-dialog
     [(visible)]="deleteProductDialog"

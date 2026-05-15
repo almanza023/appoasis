@@ -105,6 +105,7 @@
                         <th>Precio Venta</th>
                         <th>Precio Compra</th>
                         <th>Cantidad</th>
+                        <th>Subtotal</th>
                         <th>Acciones</th>
                     </tr>
                 </ng-template>
@@ -123,6 +124,9 @@
                         </td>
                         <td>
                             <input pInputText type="number" [(ngModel)]="producto.cantidad" [ngModelOptions]="{ standalone: true }" min="1" [value]="1" (change)="producto.cantidad = producto.cantidad || 1" />
+                        </td>
+                        <td>
+                            {{ ((producto.precio_compra || 0) * (producto.cantidad || 0)) | currency }}
                         </td>
                         <td>
                             <p-button label="Agregar" icon="pi pi-plus" (click)="agregarProducto(producto); producto.cantidad = 0;"></p-button>

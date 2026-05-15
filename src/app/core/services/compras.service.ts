@@ -62,6 +62,15 @@ export class ComprasService {
     return this.http.delete<any>(url, {headers});
   }
 
+  deleteCompra(id:any, userId?: number | string): Observable<any> {
+    const headers = { 'Authorization': 'Bearer '+localStorage.getItem('token') }
+    let url=`${environment.baseURL}/compras/${id}`;
+    const body = userId !== undefined && userId !== null && userId !== ''
+      ? { user_id: Number(userId) }
+      : {};
+    return this.http.delete<any>(url, { headers, body });
+  }
+
   postFilter(item:any): Observable<any> {
     const headers = { 'Authorization': 'Bearer '+localStorage.getItem('token') }
     let url=`${environment.baseURL}/compras-filter`;

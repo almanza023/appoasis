@@ -71,6 +71,15 @@ export class RegistroVentasComponent implements OnInit {
         );
     }
 
+    private getSaldoPendientePago(): number {
+        return Math.max(this.saldo, 0);
+    }
+
+    onTipoPagoSeleccionado(tipoPago: any) {
+        this.tipopago = tipoPago || {};
+        this.venta.valor = this.getSaldoPendientePago();
+    }
+
     ngOnInit() {
         this.id = this.route.snapshot.paramMap.get('id');
         this.venta_id = this.route.snapshot.paramMap.get('id');
@@ -505,7 +514,11 @@ export class RegistroVentasComponent implements OnInit {
             });
         }
     }
-    agregarPago() {
+    agregarPago(event?: Event) {
+        if (event && !event.isTrusted) {
+            return;
+        }
+
         if (this.tipopago.id == '' || this.tipopago.id == undefined) {
             this.messageService.add({
                 severity: 'warn',
@@ -551,7 +564,7 @@ export class RegistroVentasComponent implements OnInit {
             valor: this.venta.valor,
         });
 
-        this.venta.valor = 0; // Reiniciar el valor después de agregar el pago
+        this.venta.valor = this.getSaldoPendientePago();
         this.messageService.add({
             severity: 'success',
             summary: 'Éxito',
@@ -562,6 +575,7 @@ export class RegistroVentasComponent implements OnInit {
 
     quitarPago(pago: any) {
         this.pagos = this.pagos.filter((p) => p !== pago);
+        this.venta.valor = this.getSaldoPendientePago();
         this.messageService.add({
             severity: 'success',
             summary: 'Éxito',
@@ -570,7 +584,11 @@ export class RegistroVentasComponent implements OnInit {
         });
     }
 
-    agregarPagoTotal() {
+    agregarPagoTotal(event?: Event) {
+        if (event && !event.isTrusted) {
+            return;
+        }
+
         if (!this.tipopago.nombre) {
             this.messageService.add({
                 severity: 'warn',
@@ -602,6 +620,8 @@ export class RegistroVentasComponent implements OnInit {
             tipo: this.tipopago.nombre, // Usar el tipo de pago seleccionado
             valor: saldoPendiente,
         });
+
+        this.venta.valor = this.getSaldoPendientePago();
     }
 
     calcularCambio(): number {

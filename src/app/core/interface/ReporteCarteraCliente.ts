@@ -25,4 +25,6 @@ export interface Factura {
   id?: string;
   fecha?: string;
   total?: number;
+  abono?: number;
+  saldo?: number;
 }
