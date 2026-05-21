@@ -25,7 +25,7 @@ export class CarterasComponent {
     nombreModulo: string = 'Módulo de Cuentas por Cobrar';
 
     cliente_id:number=0;
-    filtroEstado:number=0;
+    filtroEstado:number=1;
     estados:any=[
         {id:0 , nombre:"TODOS"},
         {id:1 , nombre:"PENDIENTE"},
